@@ -2,7 +2,9 @@
   <div class="container-box">
     <div class="content-box">
       <div class="chat-outer-box">
-        <div class="chat-content">111</div>
+        <div class="chat-content">
+          <AiChat></AiChat>
+        </div>
       </div>
       <div class="right-outer-box">
         <div class="stakeholder-box">
@@ -10,7 +12,9 @@
             <StakeHolderPage></StakeHolderPage>
           </div>
         </div>
-        <div class="generate-box">222</div>
+        <div class="generate-box">
+          <AiPhoto></AiPhoto>
+        </div>
       </div>
     </div>
   </div>
@@ -18,8 +22,10 @@
 
 <script>
 import StakeHolderPage from "./stakeholder-page.vue";
+import AiChat from "./chat.vue";
+import AiPhoto from "./photo.vue";
 export default {
-  components: { StakeHolderPage },
+  components: { StakeHolderPage, AiChat, AiPhoto },
 };
 </script>
 
@@ -38,13 +44,12 @@ export default {
   .chat-outer-box {
     width: 30%;
     height: 100%;
-    background: green;
     min-height: 400px;
   }
   .right-outer-box {
     flex: 1;
     height: 100%;
-    background: salmon;
+
     .stakeholder-box {
       height: 500px;
       width: 100%;
@@ -52,7 +57,7 @@ export default {
       padding: 0 20px;
       overflow: hidden;
       border-radius: 30px;
-      .inner-box{
+      .inner-box {
         height: 100%;
         border-radius: 30px;
         overflow: hidden;
@@ -62,7 +67,6 @@ export default {
       width: 100%;
       height: calc(100% - 500px);
       min-height: 400px;
-      background: rgb(166, 150, 148);
       overflow: hidden;
     }
   }
