@@ -2,7 +2,6 @@
   <div class="register-container">
     <div class="register-form">
       <div class="form-title">Sign in</div>
-      <div v-if="error" class="error">{{ error }}</div>
       <form>
         <el-input placeholder="user id" v-model="userId" clearable> </el-input>
         <el-button @click="register" type="success">Sign in</el-button>
@@ -17,12 +16,11 @@ export default {
   data() {
     return {
       userId: "",
-      error: "",
     };
   },
   methods: {
     async register() {
-      this.$router.push('/home')
+      this.$router.push("/home");
     },
   },
 };
@@ -56,7 +54,7 @@ export default {
   }
 }
 
-input[type="text"] {
+input {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -65,7 +63,7 @@ input[type="text"] {
   border-radius: 4px;
   box-sizing: border-box;
 }
-.el-button{
+.el-button {
   margin: 20px 0;
 }
 
@@ -82,9 +80,5 @@ button {
 
 button:hover {
   background-color: #752d73;
-}
-.error {
-  color: #ff0000;
-  font-weight: bold;
 }
 </style>
