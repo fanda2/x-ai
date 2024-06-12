@@ -49,7 +49,6 @@ export default {
   .right-outer-box {
     flex: 1;
     height: 100%;
-
     .stakeholder-box {
       height: 500px;
       width: 100%;
@@ -57,7 +56,6 @@ export default {
       padding: 0 20px;
       overflow: hidden;
       border-radius: 30px;
-      .inner-box {
         height: 100%;
         border-radius: 30px;
         overflow: hidden;
