@@ -1,12 +1,13 @@
 <template>
   <div class="register-container">
     <div class="register-form">
-      <h2>注册</h2>
+      <div class="form-title">Sign in</div>
       <div v-if="error" class="error">{{ error }}</div>
-      <form @submit.prevent="register">
-        <input type="text" v-model="username" placeholder="用户名" required>
-        <button type="submit">注册</button>
+      <form>
+        <el-input placeholder="user id" v-model="userId" clearable> </el-input>
+        <el-button @click="register" type="success">Sign in</el-button>
       </form>
+      <div class="bottom-notice">Don't have an account yet? Sign up now!</div>
     </div>
   </div>
 </template>
@@ -15,33 +16,25 @@
 export default {
   data() {
     return {
-      username: '',
-      error: ''
-    }
+      userId: "",
+      error: "",
+    };
   },
   methods: {
     async register() {
-      try {
-        if (this.username === 'existinguser') {
-          this.error = '用户名已经存在'
-          return
-        }
-        this.$router.push('/home')
-      } catch (error) {
-        this.error = '注册失败,请稍后重试'
-      }
-    }
-  }
-}
+      this.$router.push('/home')
+    },
+  },
+};
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(to right, #6b6b6b, #202020);
+  background: linear-gradient(to bottom, #3c1a63, #8e305c);
 }
 
 .register-form {
@@ -49,10 +42,21 @@ export default {
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  width: 300px;
+  width: 400px;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  .form-title {
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 20px 0;
+  }
 }
 
-input[type=text] {
+input[type="text"] {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -61,9 +65,12 @@ input[type=text] {
   border-radius: 4px;
   box-sizing: border-box;
 }
+.el-button{
+  margin: 20px 0;
+}
 
 button {
-  background-color: #4CAF50;
+  background-color: #a24da1;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -74,9 +81,8 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #752d73;
 }
-
 .error {
   color: #ff0000;
   font-weight: bold;
