@@ -14,4 +14,8 @@ export default {};
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+html,body{
+  padding: 0;
+  margin: 0;
+}
 </style>
