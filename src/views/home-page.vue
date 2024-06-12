@@ -56,17 +56,15 @@ export default {
       padding: 0 20px;
       overflow: hidden;
       border-radius: 30px;
-        height: 100%;
-        border-radius: 30px;
-        overflow: hidden;
-      }
-    }
-    .generate-box {
-      width: 100%;
-      height: calc(100% - 500px);
-      min-height: 400px;
+      border-radius: 30px;
       overflow: hidden;
     }
+  }
+  .generate-box {
+    width: 100%;
+    height: calc(100% - 500px);
+    min-height: 400px;
+    overflow: hidden;
   }
 }
 </style>
