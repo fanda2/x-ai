@@ -6,14 +6,39 @@
       </div>
       <div>
         <el-form ref="form" :model="form" label-width="100px">
-          <el-form-item label="设计师ID">
-            <el-input v-model="form.designerId"></el-input>
+          <el-form-item label="设计师">
+            <el-select v-model="form.designerId">
+              <el-option label="Designer 1" value="1"></el-option>
+              <el-option label="Designer 2" value="2"></el-option>
+              <el-option label="Designer 3" value="3"></el-option>
+              <el-option label="Designer 4" value="4"></el-option>
+              <el-option label="Designer 5" value="5"></el-option>
+              <el-option label="Designer 6" value="6"></el-option>
+              <el-option label="Designer 7" value="7"></el-option>
+              <el-option label="Designer 8" value="8"></el-option>
+              <el-option label="Designer 9" value="9"></el-option>
+              <el-option label="Designer 10" value="10"></el-option>
+              <el-option label="Designer 11" value="11"></el-option>
+              <el-option label="Designer 12" value="12"></el-option>
+              <el-option label="Designer 13" value="13"></el-option>
+              <el-option label="Designer 14" value="14"></el-option>
+              <el-option label="Designer 15" value="15"></el-option>
+            </el-select>
           </el-form-item>
-          <el-form-item label="发布者名称">
-            <el-input v-model="form.creator"></el-input>
+          <el-form-item label="发布者">
+            <el-cascader
+              v-model="form.creatorSelect"
+              :options="options"
+              :show-all-levels="false"
+              @change="handleCreatorSelectChange"
+            ></el-cascader>
           </el-form-item>
           <el-form-item label="所属分类">
-            <el-select v-model="form.classify">
+            <el-select
+              v-model="form.classify"
+              disabled
+              placeholder="选择发布者后自动识别"
+            >
               <el-option label="Clients and Users" value="clients"></el-option>
               <el-option
                 label="Construction Sector"
@@ -50,8 +75,12 @@
           <el-form-item label="需求ID">
             <el-input v-model="messageForm.requestId"></el-input>
           </el-form-item>
-          <el-form-item label="回复人名称">
-            <el-input v-model="messageForm.creator"></el-input>
+          <el-form-item label="回复人">
+            <el-cascader
+              v-model="messageForm.creatorSelect"
+              :options="options"
+              :show-all-levels="false"
+            ></el-cascader>
           </el-form-item>
           <el-form-item label="回复内容">
             <el-input type="textarea" v-model="messageForm.message"></el-input>
@@ -123,20 +152,24 @@ import {
   deleteMessageAny,
 } from "../common/common";
 
+import { personOptions } from "../utils/person";
+
 export default {
   data() {
     return {
+      options: personOptions,
+
       form: {
         designerId: "",
-        creator: "",
+        creatorSelect: [],
         requestContent: "",
-        classify: "clients",
+        classify: "",
       },
       formLoading: false,
 
       messageForm: {
         requestId: "",
-        creator: "",
+        creatorSelect: [],
         message: "",
       },
       messageFormLoading: false,
@@ -162,7 +195,9 @@ export default {
         });
       }
 
-      if (!this.form.creator) {
+      const classify = this.form.creatorSelect[0];
+      const creator = this.form.creatorSelect[1];
+      if (!creator) {
         return this.$message({
           message: "请输入需求创建者",
           type: "warning",
@@ -180,10 +215,10 @@ export default {
 
       // 执行提交
       const { code } = await createRequest(
-        this.form.creator,
+        creator,
         this.form.requestContent,
         this.form.designerId,
-        this.form.classify
+        classify
       );
 
       this.formLoading = false;
@@ -198,6 +233,7 @@ export default {
       this.form = {
         designerId: "",
         creator: "",
+        creatorSelect: [],
         requestContent: "",
         classify: "clients",
       };
@@ -215,7 +251,8 @@ export default {
         });
       }
 
-      if (!this.messageForm.creator) {
+      const creator = this.messageForm.creatorSelect[1];
+      if (!creator) {
         return this.$message({
           message: "请输入回复人名称",
           type: "warning",
@@ -232,10 +269,10 @@ export default {
       this.messageFormLoading = true;
 
       // 执行回复
-      await createMessageAny(
+      const { code } = await createMessageAny(
         this.messageForm.requestId,
         this.messageForm.message,
-        this.messageForm.creator
+        creator
       );
 
       this.messageFormLoading = false;
@@ -312,6 +349,12 @@ export default {
         message: "删除成功",
         type: "success",
       });
+    },
+
+    handleCreatorSelectChange(value) {
+      console.log(value);
+      const classify = value[0];
+      this.form.classify = classify;
     },
   },
 };
