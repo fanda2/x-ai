@@ -4,7 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Login from "@/views/login-page.vue";
 import Chat from "@/views/chat.vue";
 import Photo from "@/views/photo.vue";
-import addInfo from "@/views/add-info.vue";
+import admin from "@/views/admin.vue";
 
 Vue.use(VueRouter);
 
@@ -25,9 +25,9 @@ const routes = [
     component: Photo,
   },
   {
-    path: "/add-info",
-    name: "addInfo",
-    component: addInfo,
+    path: "/admin",
+    name: "admin",
+    component: admin,
   },
   {
     path: "/home",

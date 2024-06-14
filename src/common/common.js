@@ -43,7 +43,7 @@ export const getImageList = async () => {
 
 //与ai对话，发送内容哦那个
 export const chatMessage = async (messages) => {
-    console.log("dd",messages)
+  console.log("dd", messages);
   return await http_post("chat", "", {
     messages: messages,
   });
@@ -55,5 +55,15 @@ export const createMessage = async (requestId, message, designerId) => {
     requestId: requestId,
     message: message,
     designerId: designerId,
+  });
+};
+
+// 添加需求
+export const createRequest = async (creator, content, designerId, classify) => {
+  return await http_post("request", "", {
+    creator,
+    content,
+    designerId: Number(designerId),
+    classify,
   });
 };
