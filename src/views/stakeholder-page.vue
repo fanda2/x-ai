@@ -12,7 +12,11 @@
       </div>
     </div>
     <div class="tab-content">
-      <ListItem :commentList="messageList"   @getCommentList="getComment"></ListItem>
+      <LoadingPage :isLoading="isloading"></LoadingPage>
+      <ListItem
+        :commentList="messageList"
+        @getCommentList="getComment"
+      ></ListItem>
     </div>
   </div>
 </template>
@@ -20,10 +24,12 @@
 <script>
 import ListItem from "./list-item.vue";
 import { getDesignList, getMessigeList } from "../common/common";
+import LoadingPage from "./loading-page.vue";
 export default {
-  components: { ListItem },
+  components: { ListItem, LoadingPage },
   data() {
     return {
+      isloading:false,
       tabArr: [
         {
           index: 1,
@@ -45,7 +51,7 @@ export default {
       messageList: [],
       commentValue: "",
       designerId: "",
-      activeType:"clients",
+      activeType: "clients",
     };
   },
   created() {
@@ -63,7 +69,12 @@ export default {
     },
     //获取对应消息列表
     getRequestList: async function (type) {
+      this.isloading = true;
       const result = await getDesignList(this.designerId, type);
+      if(result.code!==200){        
+        this.isloading =false;
+        return this.$message.error("获取信息失败");
+      }
       let requestList = result.data.requestList;
       // this.messageList = this.requestList;
       this.setRequestMessageList(requestList);
@@ -74,12 +85,14 @@ export default {
       let that = this;
       Promise.all(this.getRequestMessageListApi(requestList)).then(
         (arr) => {
+          this.isloading =false;
           arr?.forEach((item, index) => {
             requestList[index].childrenList = item.data.messageList;
           });
           this.messageList = requestList;
         },
         (e) => {
+          this.isloading =false;
           console.log(e);
         }
       );
@@ -92,9 +105,9 @@ export default {
       return requestArr;
     },
     //触发请求信息回调
-    getComment:function(){
+    getComment: function () {
       this.getRequestList(this.activeType);
-    }
+    },
   },
 };
 </script>

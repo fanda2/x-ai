@@ -61,6 +61,7 @@ export default {
       border-radius: 30px;
       border-radius: 30px;
       overflow: hidden;
+      min-width: 1000px;
     }
   }
   .generate-box {

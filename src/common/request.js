@@ -22,12 +22,12 @@ export const http_get = (module, action, data) => {
   return new Promise((resolve, reject) => {
     if (action != "") {
       axios
-        .get(`${BASE_URL}/${module}/${action}`,{params:data, headers})
+        .get(`${BASE_URL}/${module}/${action}`, { params: data, headers })
         .then((res) => resolve(res.data))
         .catch((err) => reject(err));
     } else {
       axios
-        .get(`${BASE_URL}/${module}`, {params:data, headers})
+        .get(`${BASE_URL}/${module}`, { params: data, headers })
         .then((res) => resolve(res.data))
         .catch((err) => reject(err));
     }
@@ -48,24 +48,43 @@ export const http_post = (module, action, data) => {
     headers = { ...headers, Authorization: token };
   }
   return new Promise((resolve, reject) => {
-    if(action!=""){
+    if (action != "") {
       axios
-      .post(`${BASE_URL}/${module}/${action}`, data, {
-        headers,
-      })
-      .then((res) => resolve(res.data))
-      .catch((err) => reject(err));
-    }else{
+        .post(`${BASE_URL}/${module}/${action}`, data, {
+          headers,
+        })
+        .then((res) => resolve(res.data))
+        .catch((err) => reject(err));
+    } else {
       axios
-      .post(`${BASE_URL}/${module}`, data, {
-        headers,
-      })
-      .then((res) => resolve(res.data))
-      .catch((err) => reject(err));
+        .post(`${BASE_URL}/${module}`, data, {
+          headers,
+        })
+        .then((res) => resolve(res.data))
+        .catch((err) => reject(err));
     }
   });
 };
 
+/**
+ * 自定义地址
+ */
+
+export const http_all = (url, data) => {
+  const token = localStorage.getItem("token");
+  let headers = { "Content-Type": "multipart/form-data" };
+  if (token) {
+    headers = { ...headers, authorization: token };
+  }
+  return new Promise((resolve, reject) => {
+    axios
+      .post(url, data, {
+        headers,
+      })
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err));
+  });
+};
 
 /**
  * 上传图片的方法

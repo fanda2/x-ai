@@ -30,22 +30,35 @@
                   {{ formatTime(item.create_time) }} Remaining
                 </div>
                 <div class="split-line"></div>
-                <div class="title-content-item time-show">tags</div>
+                <div class="title-content-item tag-show">
+                  <div class="tag-show-title">Hot Comments:</div>
+                  <div class="tag-list">
+                    <div class="tag-list-item">
+                      tags
+                      <div class="ico-box">
+                        <img src="../assets/img/success.svg" alt="成功" />
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <span v-for="(tag, i) in item.hot_tags" :key="i">{{
+                    tag
+                  }}</span> -->
+                </div>
               </div>
               <div class="comment-content">
-                {{ item.request_content }}
+                ({{ item.request_id }}){{ item.request_content }}
               </div>
             </div>
             <div class="right-box">
               <div
                 class="ico-box color-blue"
-                @click="sendAnalyseMessage(item.request_content)"
+                @click="sendAnalyseMessage(item.request_content, item)"
               >
                 <img src="../assets/img/statistic.svg" alt="统计" />
               </div>
               <div
                 class="ico-box"
-                @click="sendTrackMessage(item.request_content)"
+                @click="sendTrackMessage(item.request_content, item)"
               >
                 <img src="../assets/img/guid.svg" alt="发送" />
               </div>
@@ -75,7 +88,7 @@
                   </div>
                 </div>
                 <div class="comment-content">
-                  {{ childItem.message_content }}
+                  ({{ childItem.message_id }}){{ childItem.message_content }}
                 </div>
               </div>
               <div class="right-box" style="width: 60px">
@@ -150,6 +163,7 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       commentValue: "",
       isLogin: false,
       userAvatar: "",
@@ -247,6 +261,7 @@ export default {
         type: "message",
         istemplate: false,
         value: sendValue,
+        requestId: chatMsg.request_id,
       });
     },
 
@@ -271,18 +286,20 @@ export default {
       this.$emit("getCommentList");
     },
     //发送信息
-    sendAnalyseMessage: function (value) {
+    sendAnalyseMessage: function (value, chatMsg) {
       this.$bus.$emit("sendMessage", {
         type: "analyse",
         istemplate: true,
         value: value,
+        requestId: chatMsg.request_id,
       });
     },
-    sendTrackMessage: function (value) {
+    sendTrackMessage: function (value, chatMsg) {
       this.$bus.$emit("sendMessage", {
         type: "track",
         istemplate: true,
         value: value,
+        requestId: chatMsg.request_id,
       });
     },
   },
@@ -360,6 +377,45 @@ export default {
         }
         .user-name {
           font-weight: bold;
+        }
+        .tag-show {
+          display: flex;
+          width: 50%;
+          min-width: 300px;
+          &-title{
+            width: 128px;
+          }
+          .tag-list {
+            width: 80%;
+            height: 100%;
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
+            &-item {
+              padding: 0 10px;
+              display: flex;
+              height: 20px;
+              line-height: 20px;
+              font-size: 14px;
+              border-radius: 10px;
+              background: wheat;
+              border: 1px solid #6c6c6c;
+              .ico-box {
+                margin-left: 4px;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: white;
+              }
+              img {
+                width: 90%;
+                height: 90%;
+              }
+            }
+          }
         }
       }
       .comment-content {

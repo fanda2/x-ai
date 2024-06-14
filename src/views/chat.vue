@@ -54,6 +54,7 @@ import { extractTags } from "@/utils/utils";
 export default {
   data() {
     return {
+      currentRequestId: "",
       trackContent: "Track: 请问是否有其他需求与这一变动产生冲突？",
       alalyseContent: "Analyse:现在建设方提出一个需求",
       responseContent: "Response:现在建设方提出一个需求",
@@ -95,6 +96,7 @@ export default {
       ? JSON.parse(localStorage.getItem("messageList"))
       : [];
     this.$bus.$on("sendMessage", (data) => {
+      this.currentRequestId = data.requestId;
       if (data.istemplate && data.type == "analyse") {
         this.sendMessageApi(this.alalyseContent + data.value);
       } else if (data.istemplate && data.type == "track") {
@@ -105,7 +107,7 @@ export default {
     });
   },
   methods: {
-    sendMessageApi: async function (sendContent) {
+    sendMessageApi: async function (sendContent, requestId) {
       let senMessageArr = [];
       //获取历史消息
       this.messageList.forEach((item) => {
@@ -123,7 +125,7 @@ export default {
       this.messageList.push({
         Message: { Role: "user", Content: sendContent },
       });
-      const result = await chatMessage(senMessageArr);
+      const result = await chatMessage(senMessageArr, this.currentRequestId);
       if (result.code !== 200) {
         return this.$message.error("信息发送失败！");
       }
