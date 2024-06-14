@@ -73,6 +73,9 @@ export default {
   },
   created() {
     this.getImageListAll();
+    this.$bus.$on("addTag",(data)=>{
+      console.log(data)
+    })
   },
   methods: {
     //获取所有图片记录

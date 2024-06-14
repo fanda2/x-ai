@@ -42,10 +42,10 @@ export const getImageList = async () => {
 };
 
 //与ai对话，发送内容哦那个
-export const chatMessage = async (role, content) => {
+export const chatMessage = async (messages) => {
+    console.log("dd",messages)
   return await http_post("chat", "", {
-    role: role,
-    content: content,
+    messages: messages,
   });
 };
 

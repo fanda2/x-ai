@@ -37,10 +37,16 @@
               </div>
             </div>
             <div class="right-box">
-              <div class="ico-box color-blue">
+              <div
+                class="ico-box color-blue"
+                @click="sendAnalyseMessage(item.request_content)"
+              >
                 <img src="../assets/img/statistic.svg" alt="统计" />
               </div>
-              <div class="ico-box">
+              <div
+                class="ico-box"
+                @click="sendTrackMessage(item.request_content)"
+              >
                 <img src="../assets/img/guid.svg" alt="发送" />
               </div>
               <div
@@ -89,9 +95,17 @@
                 <div>回复：</div>
                 <div
                   class="reback-user-box toe"
-                  :title="replayObj.request_creator"
+                  :title="
+                    replayObj.request_creator
+                      ? replayObj.request_creator
+                      : replayObj.creator
+                  "
                 >
-                  {{ replayObj.request_creator }}
+                  {{
+                    replayObj.request_creator
+                      ? replayObj.request_creator
+                      : replayObj.creator
+                  }}
                 </div>
               </div>
               <div class="center-box">
@@ -112,8 +126,7 @@
         </div>
       </div>
       <div v-else class="message-list-content">
-        <el-empty :image-size="200">
-        </el-empty>
+        <el-empty :image-size="200"> </el-empty>
       </div>
     </div>
   </div>
@@ -143,7 +156,7 @@ export default {
       showInputIndex: -1,
       replayObj: {},
       userInfo: {},
-      currentRequestId:0,
+      currentRequestId: 0,
       allowList: [
         "Minimalism Style",
         "Bamboo Material",
@@ -173,17 +186,17 @@ export default {
       ? JSON.parse(localStorage.getItem("userInfo"))
       : {};
     this.userInfo = userInfo;
-    console.log(this.commentList)
+    console.log(this.commentList);
   },
   methods: {
     sendComment() {
-      if(this.commentValue.trim()==""){
+      if (this.commentValue.trim() == "") {
         return this.$message({
           message: "发送信息不能为空",
           type: "warning",
         });
       }
-      this.designerCreateMessage()
+      this.designerCreateMessage();
     },
     /**
      * 清除输入框内容
@@ -227,6 +240,14 @@ export default {
       this.showInputIndex = index;
       this.replayObj = chatMsg;
       this.currentRequestId = chatMsg.request_id;
+      let sendValue = chatMsg.request_content
+        ? chatMsg.request_content
+        : chatMsg.message_content;
+      this.$bus.$emit("sendMessage", {
+        type: "message",
+        istemplate: false,
+        value: sendValue,
+      });
     },
 
     //格式化时间
@@ -241,10 +262,28 @@ export default {
         this.commentValue,
         this.userInfo.user_no
       );
-      if(result.code!==200){
+      if (result.code !== 200) {
         return this.$message.error("回复信息失败");
       }
+      this.showInputIndex = -1;
+      this.replayObj = {};
+      this.commentValue = "";
       this.$emit("getCommentList");
+    },
+    //发送信息
+    sendAnalyseMessage: function (value) {
+      this.$bus.$emit("sendMessage", {
+        type: "analyse",
+        istemplate: true,
+        value: value,
+      });
+    },
+    sendTrackMessage: function (value) {
+      this.$bus.$emit("sendMessage", {
+        type: "track",
+        istemplate: true,
+        value: value,
+      });
     },
   },
 };

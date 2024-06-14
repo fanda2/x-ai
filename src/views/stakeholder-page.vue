@@ -45,7 +45,7 @@ export default {
       messageList: [],
       commentValue: "",
       designerId: "",
-      activeType:"",
+      activeType:"clients",
     };
   },
   created() {

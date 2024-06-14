@@ -2,47 +2,39 @@
   <div class="chat">
     <div class="chat-list">
       <div class="chat-list__header">AI ChatBot</div>
-      <div class="chat-list__body">
+      <div v-if="messageList.length" class="chat-list__body">
         <div
-          class="chat-list-item right-align"
-          v-for="(item, index) in 2"
+          class="chat-list-item"
+          :class="
+            item.Message.Role == 'assistant' ? 'left-align' : 'right-align'
+          "
+          v-for="(item, index) in messageList"
           :key="index"
         >
-          <div class="chat-list-item__name">Name 1</div>
+          <div class="chat-list-item__name">{{ item.Message.Role }}</div>
           <div class="chat-list-item__content right-align-content">
-            content测试内容测试内容测试内容测试内容测试内容测试内容测试内容
-          </div>
-        </div>
-
-        <div
-          class="chat-list-item left-align"
-          v-for="(item, index) in 2"
-          :key="index"
-        >
-          <div class="chat-list-item__name">Name 1</div>
-          <div class="chat-list-item__content left-align-content">
-            content测试内容测试内容测试内容测试内容测试内容测试内容测试内容
-
-            <div class="chat-list-item__tags">
-              <div class="chat-list-item__tags-item">标签</div>
-              <div class="chat-list-item__tags-item">标签</div>
-              <div class="chat-list-item__tags-item">标签</div>
-              <div class="chat-list-item__tags-item">标签</div>
-              <div class="chat-list-item__tags-item">标签</div>
+            {{ item.Message.Content }}
+            <div
+              v-if="
+                extractTagsFormat(item.Message.Content).length !== 0 &&
+                item.Message.Role == 'assistant'
+              "
+              class="chat-list-item__tags"
+            >
+              <div
+                class="chat-list-item__tags-item"
+                v-for="(item, index) in extractTagsFormat(item.Message.Content)"
+                :key="index"
+                @click="chooseTag(item)"
+              >
+                {{ item }}
+              </div>
             </div>
           </div>
         </div>
-
-        <div
-          class="chat-list-item right-align"
-          v-for="(item, index) in 6"
-          :key="index"
-        >
-          <div class="chat-list-item__name">Name 1</div>
-          <div class="chat-list-item__content right-align-content">
-            content测试内容测试内容测试内容测试内容测试内容测试内容测试内容
-          </div>
-        </div>
+      </div>
+      <div class="chat-list__body">
+        <el-empty :image-size="200"> </el-empty>
       </div>
     </div>
     <div class="chat-input">
@@ -58,13 +50,40 @@
 
 <script>
 import { chatMessage } from "@/common/common";
+import { extractTags } from "@/utils/utils";
 export default {
   data() {
     return {
-      contrastContent: "Track: 请问是否有其他需求与这一变动产生冲突？",
-      alalyse: "",
+      trackContent: "Track: 请问是否有其他需求与这一变动产生冲突？",
+      alalyseContent: "Analyse:现在建设方提出一个需求",
+      responseContent: "Response:现在建设方提出一个需求",
       userInfo: "",
       sendContent: "",
+
+      messageList: [],
+
+      allowList: [
+        "Minimalism Style",
+        "Bamboo Material",
+        "Curved  Ribs Dome Framework",
+        "Grid Dome Framework",
+        "Geodesic Dome Framework",
+        "Hexagonal Dome Framework",
+        "Fence",
+        "Forest",
+        "Garden",
+        "Grass",
+        "Hemispherical Design",
+        "Mountain Environment",
+        "Nature",
+        "Outdoors",
+        "Polygonal Grid",
+        "Scenery",
+        "Self-Supporting Structure",
+        "Sky",
+        "Sunlight",
+        "Tree",
+      ],
     };
   },
   created() {
@@ -72,22 +91,64 @@ export default {
     if (userMessage) {
       this.userInfo = JSON.parse(userMessage);
     }
+    this.messageList = localStorage.getItem("messageList")
+      ? JSON.parse(localStorage.getItem("messageList"))
+      : [];
+    this.$bus.$on("sendMessage", (data) => {
+      if (data.istemplate && data.type == "analyse") {
+        this.sendMessageApi(this.alalyseContent + data.value);
+      } else if (data.istemplate && data.type == "track") {
+        this.sendMessageApi(this.trackContent);
+      } else {
+        this.sendMessageApi(this.responseContent + data.value);
+      }
+    });
   },
   methods: {
-    //发送消息进行聊天对话
-    chatMessage: async function (content) {
-      const result = await chatMessage(this.userInfo.user_role, content);
-      console.log("发送结果",result)
+    sendMessageApi: async function (sendContent) {
+      let senMessageArr = [];
+      //获取历史消息
+      this.messageList.forEach((item) => {
+        let obj = {
+          role: item.Message.Role,
+          content: item.Message.Content,
+        };
+        senMessageArr.push(obj);
+      });
+      //将当前消息插入
+      senMessageArr.push({
+        role: "user",
+        content: sendContent,
+      });
+      this.messageList.push({
+        Message: { Role: "user", Content: sendContent },
+      });
+      const result = await chatMessage(senMessageArr);
+      if (result.code !== 200) {
+        return this.$message.error("信息发送失败！");
+      }
+      this.sendContent = "";
+      this.messageList = [
+        ...this.messageList,
+        ...result.data.chatResult.Choices,
+      ];
+      localStorage.setItem("messageList", JSON.stringify(this.messageList));
     },
     //点击发送信息按钮
-    sendMessageBtn: function () {
-      if (this.sendContent == "") {
+    sendMessageBtn: async function () {
+      if (this.sendContent.trim() == "") {
         return this.$message({
           message: "输入内容不能为空",
           type: "warning",
         });
       }
-      this.chatMessage(this.sendContent);
+      this.sendMessageApi(this.sendContent);
+    },
+    extractTagsFormat: function (message) {
+      return extractTags(message, this.allowList);
+    },
+    chooseTag: function (tag) {
+      this.$bus.$emit("addTag", tag);
     },
   },
 };
@@ -169,6 +230,7 @@ export default {
               border-radius: 16px;
               box-sizing: border-box;
               padding: 3px 8px;
+              cursor: pointer;
             }
           }
         }
