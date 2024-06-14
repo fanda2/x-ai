@@ -1,16 +1,13 @@
 <template>
   <div class="container-box">
-    <div class="content-box">
-      <div class="chat-outer-box">
-        <div class="chat-content">
-          <AiChat></AiChat>
-        </div>
+    <div class="container-content">
+      <div class="container-content_chat-outer-box">
+        <AiChat></AiChat>
       </div>
-      <div class="right-outer-box">
+      <div class="container-content_right-outer-box">
         <div class="stakeholder-box">
-          <div class="inner-box">
-            <StakeHolderPage></StakeHolderPage>
-          </div>
+          <div class="content-title">Stakeholders</div>
+          <StakeHolderPage></StakeHolderPage>
         </div>
         <div class="generate-box">
           <AiPhoto></AiPhoto>
@@ -33,20 +30,26 @@ export default {
 .container-box {
   width: 100%;
   height: 100vh;
+  min-width: 1400px;
+  background-color: rgb(225, 225, 225);
 }
-.content-box {
+.container-content {
   width: 100%;
   height: 100%;
   padding: 30px;
   box-sizing: border-box;
   display: flex;
   min-width: 1200px;
-  .chat-outer-box {
+  &_chat-outer-box {
     width: 30%;
     height: 100%;
     min-height: 400px;
+    padding: 0 20px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
   }
-  .right-outer-box {
+  &_right-outer-box {
     flex: 1;
     height: 100%;
     .stakeholder-box {
@@ -65,6 +68,15 @@ export default {
     height: calc(100% - 500px);
     min-height: 400px;
     overflow: hidden;
+    padding: 20px;
+    box-sizing: border-box;
   }
+}
+.content-title {
+  font-weight: bold;
+  font-size: 23px;
+  height: 40px;
+  line-height: 40px;
+  color: #333;
 }
 </style>

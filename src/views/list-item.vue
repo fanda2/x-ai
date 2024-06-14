@@ -1,6 +1,6 @@
 <template>
   <!-- 用户评论弹出框 -->
-  <div class="comment-content">
+  <div class="comment-content-outer">
     <div class="message-list">
       <div class="list-title">
         <div class="list-title-content">
@@ -8,7 +8,7 @@
           <span>DDL[12:00 AM in 2024/06/06]</span>
         </div>
       </div>
-      <div class="message-list-content">
+      <div v-if="commentList.length > 0" class="message-list-content">
         <div
           class="list-item"
           v-for="(item, index) in commentList"
@@ -17,25 +17,23 @@
           <div class="list-item-inner">
             <div class="left-box">
               <div class="avatar-box">
-                <img src="../assets/img/noman-avatar.jpg" alt="头像" />
+                <img src="../assets/img/noman-avatar.svg" alt="头像" />
               </div>
             </div>
             <div class="center-box">
               <div class="title-content">
                 <div class="title-content-item user-name">
-                  {{ item.username }}
+                  {{ item.request_creator }}
                 </div>
                 <div class="split-line"></div>
                 <div class="title-content-item time-show">
-                  4 Days 5 Hour Remaining
+                  {{ formatTime(item.create_time) }} Remaining
                 </div>
                 <div class="split-line"></div>
-                <div class="title-content-item time-show">
-                  4 Days 5 Hour Remaining
-                </div>
+                <div class="title-content-item time-show">tags</div>
               </div>
               <div class="comment-content">
-                {{ item.content }}
+                {{ item.request_content }}
               </div>
             </div>
             <div class="right-box">
@@ -43,44 +41,58 @@
                 <img src="../assets/img/statistic.svg" alt="统计" />
               </div>
               <div class="ico-box">
-                <img src="../assets/img/guid.svg" alt="统计" />
+                <img src="../assets/img/guid.svg" alt="发送" />
               </div>
-              <div class="ico-box color-red">
-                <img src="../assets/img/comment.svg" alt="统计" />
+              <div
+                class="ico-box color-red"
+                @click="showCommentInput(index, item)"
+              >
+                <img src="../assets/img/comment.svg" alt="回复" />
               </div>
             </div>
           </div>
           <div class="sub-list">
             <div
               class="sub-list-item"
-              v-for="(childItem, index) in item.childrenList"
-              :key="index"
+              v-for="(childItem, indey) in item.childrenList"
+              :key="indey"
             >
               <div class="left-box">
                 <div class="avatar-box">
-                  <img src="../assets/img/noman-avatar.jpg" alt="头像" />
+                  <img src="../assets/img/avatar1.svg" alt="头像" />
                 </div>
               </div>
               <div class="center-box">
                 <div class="title-content">
                   <div class="title-content-item user-name">
-                    {{ childItem.username }}
+                    {{ childItem.creator }}
                   </div>
                 </div>
                 <div class="comment-content">
-                  {{ childItem.content }}
+                  {{ childItem.message_content }}
                 </div>
               </div>
               <div class="right-box" style="width: 60px">
-                <div class="ico-box color-red">
+                <div
+                  class="ico-box color-red"
+                  @click="showCommentInput(index, childItem)"
+                >
                   <img src="../assets/img/comment.svg" alt="评论" />
                 </div>
               </div>
             </div>
-            <div class="comment-input-box sub-list-item">
+            <div
+              v-show="index == showInputIndex"
+              class="comment-input-box sub-list-item"
+            >
               <div class="left-box">
                 <div>回复：</div>
-                <div class="reback-user-box">Construction 01</div>
+                <div
+                  class="reback-user-box toe"
+                  :title="replayObj.request_creator"
+                >
+                  {{ replayObj.request_creator }}
+                </div>
               </div>
               <div class="center-box">
                 <el-input
@@ -91,7 +103,7 @@
                 </el-input>
               </div>
               <div class="right-box" style="width: 60px">
-                <div class="ico-box">
+                <div class="ico-box" @click="sendComment">
                   <img src="../assets/img/send.svg" alt="评论" />
                 </div>
               </div>
@@ -99,16 +111,22 @@
           </div>
         </div>
       </div>
+      <div v-else class="message-list-content">
+        <el-empty :image-size="200">
+        </el-empty>
+      </div>
     </div>
   </div>
 </template>
 <script>
+import { formatTimeDifference } from "../utils/utils";
+import { createMessage } from "../common/common";
 export default {
   props: {
     commentList: {
-      type: Object,
+      type: Array,
       default() {
-        return {};
+        return [];
       },
     },
     usePage: Number,
@@ -122,23 +140,50 @@ export default {
       commentValue: "",
       isLogin: false,
       userAvatar: "",
+      showInputIndex: -1,
+      replayObj: {},
+      userInfo: {},
+      currentRequestId:0,
+      allowList: [
+        "Minimalism Style",
+        "Bamboo Material",
+        "Curved  Ribs Dome Framework",
+        "Grid Dome Framework",
+        "Geodesic Dome Framework",
+        "Hexagonal Dome Framework",
+        "Fence",
+        "Forest",
+        "Garden",
+        "Grass",
+        "Hemispherical Design",
+        "Mountain Environment",
+        "Nature",
+        "Outdoors",
+        "Polygonal Grid",
+        "Scenery",
+        "Self-Supporting Structure",
+        "Sky",
+        "Sunlight",
+        "Tree",
+      ],
     };
   },
   created() {
-    let token = null;
-    token = localStorage.getItem("token");
-    this.userAvatar = localStorage.getItem("userInfo")
-      ? JSON.parse(localStorage.getItem("userInfo")).authorAvatar
-      : "";
-    if (token != "" && token != null) {
-      this.isLogin = true;
-    } else {
-      this.isLogin = false;
-    }
+    let userInfo = localStorage.getItem("userInfo")
+      ? JSON.parse(localStorage.getItem("userInfo"))
+      : {};
+    this.userInfo = userInfo;
+    console.log(this.commentList)
   },
   methods: {
     sendComment() {
-      this.$emit("inputChange", this.commentValue);
+      if(this.commentValue.trim()==""){
+        return this.$message({
+          message: "发送信息不能为空",
+          type: "warning",
+        });
+      }
+      this.designerCreateMessage()
     },
     /**
      * 清除输入框内容
@@ -176,17 +221,43 @@ export default {
       this.$emit("setPage", val);
       this.$emit("getCommentList");
     },
+
+    //展示评论框
+    showCommentInput: function (index, chatMsg) {
+      this.showInputIndex = index;
+      this.replayObj = chatMsg;
+      this.currentRequestId = chatMsg.request_id;
+    },
+
+    //格式化时间
+    formatTime: function (time) {
+      return formatTimeDifference(new Date(time));
+    },
+
+    // 发送信息回复
+    designerCreateMessage: async function (requestId) {
+      const result = await createMessage(
+        this.currentRequestId,
+        this.commentValue,
+        this.userInfo.user_no
+      );
+      if(result.code!==200){
+        return this.$message.error("回复信息失败");
+      }
+      this.$emit("getCommentList");
+    },
   },
 };
 </script>
 
 <style lang="less" scoped>
-.comment-content {
+.comment-content-outer {
   width: 100%;
-  height: 100%;
+  height: 98%;
+  background: darkcyan;
   .message-list {
     width: 100%;
-    height: 420px;
+    height: 100%;
     background: white;
     .list-title {
       height: 30px;
@@ -195,6 +266,7 @@ export default {
       &-content {
         float: right;
         font-size: 12px;
+        padding-right: 20px;
         color: purple;
         .slogen {
           font-weight: bold;
@@ -210,14 +282,17 @@ export default {
   }
 }
 .message-list-content {
+  position: relative;
+  padding: 0 30px;
   .list-item-inner,
   .sub-list-item {
     display: flex;
-    height: 70px;
+    min-height: 70px;
     border-radius: 10px;
     background: #eeeeee;
     margin-top: 10px;
     padding: 5px 0;
+
     .left-box {
       width: 60px;
       height: 70px;
@@ -249,15 +324,16 @@ export default {
         }
       }
       .comment-content {
-        padding: 6px 10px 0 10px;
+        width: 96%;
+        padding: 0 10px 10px 10px;
+        font-size: 14px;
       }
     }
     .right-box {
-      width: 160px;
+      width: 130px;
       display: flex;
       align-items: center;
       justify-content: space-around;
-      height: 100%;
       .ico-box {
         cursor: pointer;
         width: 30px;
@@ -291,6 +367,31 @@ export default {
         background: rgb(170, 148, 158);
       }
     }
+  }
+}
+.bottom-button {
+  position: absolute;
+  left: auto;
+  right: 10px;
+  .ico-box {
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    padding: 4px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: rgb(232, 232, 232);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 88%;
+      height: 88%;
+      object-fit: cover;
+    }
+  }
+  .ico-box:hover {
+    background: rgb(201, 201, 201);
   }
 }
 .sub-list {

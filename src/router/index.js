@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Login from "@/views/login-page.vue";
 import Chat from "@/views/chat.vue";
 import Photo from "@/views/photo.vue";
+import addInfo from "@/views/add-info.vue";
 
 Vue.use(VueRouter);
 
@@ -24,6 +25,11 @@ const routes = [
     component: Photo,
   },
   {
+    path: "/add-info",
+    name: "addInfo",
+    component: addInfo,
+  },
+  {
     path: "/home",
     name: "home",
     // route level code-splitting
@@ -37,14 +43,14 @@ const router = new VueRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   const isAuthenticated = localStorage.getItem("token");
-//   if (!isAuthenticated && to.path !== "/") {
-//     next("/");
-//     next();
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem("userInfo");
+  if (!isAuthenticated && to.path !== "/" && to.path !== "/add-info") {
+    next("/");
+    next();
+  } else {
+    next();
+  }
+});
 
 export default router;

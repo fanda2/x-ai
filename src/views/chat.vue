@@ -1,16 +1,24 @@
 <template>
   <div class="chat">
     <div class="chat-list">
-      <div class="chat-list__header">AI Bot</div>
+      <div class="chat-list__header">AI ChatBot</div>
       <div class="chat-list__body">
-        <div class="chat-list-item right-align" v-for="item in 2">
+        <div
+          class="chat-list-item right-align"
+          v-for="(item, index) in 2"
+          :key="index"
+        >
           <div class="chat-list-item__name">Name 1</div>
           <div class="chat-list-item__content right-align-content">
             content测试内容测试内容测试内容测试内容测试内容测试内容测试内容
           </div>
         </div>
 
-        <div class="chat-list-item left-align" v-for="item in 2">
+        <div
+          class="chat-list-item left-align"
+          v-for="(item, index) in 2"
+          :key="index"
+        >
           <div class="chat-list-item__name">Name 1</div>
           <div class="chat-list-item__content left-align-content">
             content测试内容测试内容测试内容测试内容测试内容测试内容测试内容
@@ -25,7 +33,11 @@
           </div>
         </div>
 
-        <div class="chat-list-item right-align" v-for="item in 6">
+        <div
+          class="chat-list-item right-align"
+          v-for="(item, index) in 6"
+          :key="index"
+        >
           <div class="chat-list-item__name">Name 1</div>
           <div class="chat-list-item__content right-align-content">
             content测试内容测试内容测试内容测试内容测试内容测试内容测试内容
@@ -34,26 +46,60 @@
       </div>
     </div>
     <div class="chat-input">
-      <textarea class="chat-input-textarea" placeholder="请输入..." />
-      <div class="chat-input-btn"></div>
+      <textarea
+        class="chat-input-textarea"
+        v-model="sendContent"
+        placeholder="请输入..."
+      />
+      <div class="chat-input-btn" @click="sendMessageBtn"></div>
     </div>
   </div>
 </template>
 
 <script>
+import { chatMessage } from "@/common/common";
 export default {
   data() {
-    return {};
+    return {
+      contrastContent: "Track: 请问是否有其他需求与这一变动产生冲突？",
+      alalyse: "",
+      userInfo: "",
+      sendContent: "",
+    };
   },
-  methods: {},
+  created() {
+    let userMessage = localStorage.getItem("userInfo");
+    if (userMessage) {
+      this.userInfo = JSON.parse(userMessage);
+    }
+  },
+  methods: {
+    //发送消息进行聊天对话
+    chatMessage: async function (content) {
+      const result = await chatMessage(this.userInfo.user_role, content);
+      console.log("发送结果",result)
+    },
+    //点击发送信息按钮
+    sendMessageBtn: function () {
+      if (this.sendContent == "") {
+        return this.$message({
+          message: "输入内容不能为空",
+          type: "warning",
+        });
+      }
+      this.chatMessage(this.sendContent);
+    },
+  },
 };
 </script>
 
 <style lang="less" scoped>
 .chat {
-  width: 360px;
+  min-width: 360px;
+  width: 100%;
   border: 1px solid gray;
-  height: 800px;
+  min-height: 800px;
+  height: 100%;
   background-color: #a2a2a2;
   border-radius: 10px;
 
@@ -61,8 +107,10 @@ export default {
     box-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
     background-color: white;
     box-sizing: border-box;
-    width: 340px;
-    height: 600px;
+    min-width: 340px;
+    width: calc(100% - 40px);
+    min-height: 600px;
+    height: calc(100% - 230px);
     border-radius: 10px;
     margin: 10px auto 0 auto;
     overflow: hidden;
@@ -81,7 +129,7 @@ export default {
       box-sizing: border-box;
       height: calc(100% - 40px);
       overflow-y: auto;
-      padding-bottom: 10px;
+      padding: 10px;
 
       .chat-list-item {
         margin-top: 10px;
@@ -89,7 +137,8 @@ export default {
         margin-right: 5px;
         // border: 1px solid #e0e0e0;
         box-sizing: border-box;
-        width: 280px;
+        min-width: 280px;
+        width: 80%;
 
         &__name {
           font-size: 12px;
@@ -98,7 +147,8 @@ export default {
         }
 
         &__content {
-          width: 280px;
+          min-width: 280px;
+          width: 100%;
           padding: 10px 10px;
           margin-top: 4px;
           font-size: 14px;
@@ -109,16 +159,16 @@ export default {
 
           .chat-list-item__tags {
             display: flex;
-            gap: 4px;
+            gap: 8px;
             margin-top: 4px;
 
             &-item {
               background-color: #fff9d5;
               color: gray;
               font-size: 12px;
-              border-radius: 10px;
+              border-radius: 16px;
               box-sizing: border-box;
-              padding: 0 5px;
+              padding: 3px 8px;
             }
           }
         }
@@ -148,19 +198,22 @@ export default {
     box-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
     box-sizing: border-box;
     background-color: white;
-    width: 340px;
-    height: 170px;
+    min-width: 340px;
+    width: calc(100% - 40px);
+    height: 180px;
     border-radius: 10px;
-    margin: 10px auto 0 auto;
+    margin: 20px auto 0 auto;
     padding: 10px 0;
     position: relative;
 
     .chat-input-textarea {
       display: block;
       box-sizing: border-box;
-      width: 320px;
+      min-width: 320px;
+      width: 100%;
       height: 120px;
       border: none;
+      padding: 10px;
       //   border: 1px solid #e0e0e0;
       margin: 0 auto;
       resize: none;

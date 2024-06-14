@@ -2,25 +2,63 @@
   <div class="register-container">
     <div class="register-form">
       <div class="form-title">Sign in</div>
-      <form>
-        <el-input placeholder="user id" v-model="userId" clearable> </el-input>
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm">
+        <el-form-item prop="userId">
+          <el-input placeholder="user id" v-model="ruleForm.userId" clearable>
+          </el-input>
+        </el-form-item>
+
         <el-button @click="register" type="success">Sign in</el-button>
-      </form>
+      </el-form>
       <div class="bottom-notice">Don't have an account yet? Sign up now!</div>
     </div>
   </div>
 </template>
 
 <script>
+import { userLogin } from "../common/common";
 export default {
   data() {
     return {
-      userId: "",
+      ruleForm: {
+        userId: "",
+      },
+      rules: {
+        userId: [
+          { required: true, message: "请输入活动名称", trigger: "blur" },
+          { min: 1, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+      },
     };
   },
   methods: {
     async register() {
-      this.$router.push("/home");
+      let isTrue = false;
+      this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          isTrue = true;
+        } else {
+          return false;
+        }
+      });
+      console.log("dd",!isNaN(this.ruleForm.userId))
+      if (isTrue && this.ruleForm.userId && !isNaN(this.ruleForm.userId)) {
+        let result = await userLogin(Number(this.ruleForm.userId));
+        if (result.code !== 200) {
+          return this.$message.error("登录失败");
+        }
+        this.$message({
+          message: "用户登录成功，欢迎你~",
+          type: "success",
+        });
+        localStorage.setItem("userInfo", JSON.stringify(result.data));
+        this.$router.push("/home");
+      } else if (this.ruleForm.userId && !isNaN(this.ruleForm.userId)) {
+        this.$message({
+          message: "输入信息错误",
+          type: "warning",
+        });
+      }
     },
   },
 };
