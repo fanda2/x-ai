@@ -67,3 +67,26 @@ export const createRequest = async (creator, content, designerId, classify) => {
     classify,
   });
 };
+
+// 任意回复
+export const createMessageAny = async (requestId, message, creator) => {
+  return await http_post("createMessageAny", "", {
+    requestId: Number(requestId),
+    message,
+    creator,
+  });
+};
+
+// 任意删除需求
+export const deleteRequestAny = async (requestId) => {
+  return await http_post("deleteRequestAny", "", {
+    requestId: Number(requestId),
+  });
+};
+
+// 删除任意回复
+export const deleteMessageAny = async (messageId) => {
+  return await http_post("deleteMessageAny", "", {
+    messageId: Number(messageId),
+  });
+};
