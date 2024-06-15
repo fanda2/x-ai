@@ -105,7 +105,7 @@
                       <div class="tag-list-item__text">
                         {{ tag }}
                       </div>
-                      <div class="ico-box">
+                      <!-- <div class="ico-box">
                         <img
                           src="../assets/img/success.svg"
                           v-if="allowList.includes(tag)"
@@ -116,7 +116,7 @@
                           v-else
                           alt="失败"
                         />
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                 </div>
@@ -556,6 +556,10 @@ export default {
               background: wheat;
               border: 1px solid #e0e0e0;
               align-items: center;
+
+              &:hover {
+                cursor: pointer;
+              }
 
               &__text {
                 display: -webkit-box;

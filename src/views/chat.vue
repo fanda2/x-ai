@@ -294,6 +294,12 @@ export default {
               box-sizing: border-box;
               padding: 3px 8px;
               cursor: pointer;
+
+              display: -webkit-box;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
             }
           }
         }
