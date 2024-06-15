@@ -90,8 +90,10 @@
                 <div class="title-content-item tag-show">
                   <div class="tag-show-title">Hot Comments:</div>
                   <div class="tag-list">
-                    <div class="tag-list-item">
-                      tags
+                    <div class="tag-list-item" v-for="tag in item.hot_tags">
+                      <div class="tag-list-item__text">
+                        {{ tag }}
+                      </div>
                       <div class="ico-box">
                         <img src="../assets/img/success.svg" alt="成功" />
                       </div>
@@ -231,7 +233,7 @@
               class="comment-input-box sub-list-item"
             >
               <div class="left-box">
-                <div>回复：</div>
+                <div style="min-width: 50px">回复：</div>
                 <div
                   class="reback-user-box toe"
                   :title="
@@ -513,26 +515,41 @@ export default {
           width: 50%;
           min-width: 300px;
           &-title {
-            width: 128px;
+            width: 115px;
           }
           .tag-list {
             width: 80%;
             height: 100%;
-            margin-left: 12px;
             display: flex;
             align-items: center;
+            gap: 4px;
+
             &-item {
-              padding: 0 10px;
+              padding: 0 5px;
               display: flex;
+              gap: 2px;
               height: 20px;
               line-height: 20px;
               font-size: 14px;
               border-radius: 10px;
               background: wheat;
-              border: 1px solid #6c6c6c;
+              border: 1px solid #e0e0e0;
+              align-items: center;
+
+              &__text {
+                display: -webkit-box;
+                max-width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                word-break: break-all;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+              }
+
               .ico-box {
                 margin-left: 4px;
                 width: 18px;
+                min-width: 18px;
                 height: 18px;
                 border-radius: 50%;
                 display: flex;

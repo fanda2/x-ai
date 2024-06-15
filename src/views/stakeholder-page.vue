@@ -12,7 +12,10 @@
       </div>
     </div>
     <div class="tab-content">
-      <LoadingPage :isLoading="isloading"></LoadingPage>
+      <!-- <LoadingPage :isLoading="isLoading"></LoadingPage> -->
+      <div :class="`loading-box ${isLoading ? 'loading-box-show' : ''}`">
+        数据加载中...
+      </div>
       <ListItem
         :commentList="messageList"
         @getCommentList="getComment"
@@ -29,7 +32,7 @@ export default {
   components: { ListItem, LoadingPage },
   data() {
     return {
-      isloading:false,
+      isLoading: false,
       tabArr: [
         {
           index: 1,
@@ -69,13 +72,19 @@ export default {
     },
     //获取对应消息列表
     getRequestList: async function (type) {
-      this.isloading = true;
+      this.isLoading = true;
       const result = await getDesignList(this.designerId, type);
-      if(result.code!==200){        
-        this.isloading =false;
+      if (result.code !== 200) {
+        this.isLoading = false;
         return this.$message.error("获取信息失败");
       }
       let requestList = result.data.requestList;
+      requestList = requestList.map((item) => {
+        return {
+          ...item,
+          hot_tags: (item.hot_tags || "").split(";").filter(Boolean),
+        };
+      });
       // this.messageList = this.requestList;
       this.setRequestMessageList(requestList);
     },
@@ -85,14 +94,14 @@ export default {
       let that = this;
       Promise.all(this.getRequestMessageListApi(requestList)).then(
         (arr) => {
-          this.isloading =false;
+          this.isLoading = false;
           arr?.forEach((item, index) => {
             requestList[index].childrenList = item.data.messageList;
           });
           this.messageList = requestList;
         },
         (e) => {
-          this.isloading =false;
+          this.isLoading = false;
           console.log(e);
         }
       );
@@ -150,5 +159,36 @@ export default {
   border-radius: 0 30px 30px 30px;
   overflow: hidden;
   padding-bottom: 10px;
+  position: relative;
+
+  .loading-box {
+    position: absolute;
+    z-index: 1000;
+    height: 40px;
+    line-height: 40px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    text-align: center;
+    background-color: rgb(77, 113, 159);
+    color: white;
+    box-shadow: 0 2px 0 rgba(128, 128, 128, 0.472);
+    display: none;
+  }
+
+  .loading-box-show {
+    display: block;
+    animation: loadingShow 0.5s ease;
+  }
+}
+
+@keyframes loadingShow {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 </style>

@@ -33,7 +33,11 @@
         </div>
         <div class="photo-preview__body-pagination">
           <div class="photo-preview__body-pagination-prev">
-            <el-button size="mini" type="primary" @click="prePage" :disabled="pageValue==1"
+            <el-button
+              size="mini"
+              type="primary"
+              @click="prePage"
+              :disabled="pageValue == 1"
               >上一页</el-button
             >
           </div>
@@ -54,7 +58,11 @@
             </el-select>
           </div>
           <div class="photo-preview__body-pagination-next">
-            <el-button size="mini" type="primary" :disabled="imageList.length==pageValue" @click="nextPage"
+            <el-button
+              size="mini"
+              type="primary"
+              :disabled="imageList.length == pageValue"
+              @click="nextPage"
               >下一页</el-button
             >
           </div>

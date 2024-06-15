@@ -15,19 +15,16 @@
           <div class="chat-list-item__content right-align-content">
             {{ item.Message.Content }}
             <div
-              v-if="
-                extractTagsFormat(item.Message.Content).length !== 0 &&
-                item.Message.Role == 'assistant'
-              "
+              v-if="item.tags && item.Message.Role == 'assistant'"
               class="chat-list-item__tags"
             >
               <div
                 class="chat-list-item__tags-item"
-                v-for="(item, index) in extractTagsFormat(item.Message.Content)"
+                v-for="(tagItem, index) in item.tags.split(';')"
                 :key="index"
-                @click="chooseTag(item)"
+                @click="chooseTag(tagItem)"
               >
-                {{ item }}
+                {{ tagItem }}
               </div>
             </div>
           </div>
@@ -55,9 +52,11 @@ export default {
   data() {
     return {
       currentRequestId: "",
-      trackContent: "Track: 请问是否有其他需求与这一变动产生冲突？",
-      alalyseContent: "Analyse:现在建设方提出一个需求",
-      responseContent: "Response:现在建设方提出一个需求",
+      trackContent: "Track：请问是否有其他需求与“#CONTENT#”这一需求相冲突？",
+      alalyseContent:
+        "Analyse：现在建设方提出，“#CONTENT#”，请从建筑设计师的角度分析这个需求。",
+      responseContent:
+        "Response：建设方提出了：“#CONTENT#”请根据这一情况提供一个清晰易懂的回复。",
       userInfo: "",
       sendContent: "",
 
@@ -98,11 +97,15 @@ export default {
     this.$bus.$on("sendMessage", (data) => {
       this.currentRequestId = data.requestId;
       if (data.istemplate && data.type == "analyse") {
-        this.sendMessageApi(this.alalyseContent + data.value);
+        this.sendMessageApi(
+          this.alalyseContent.replace("#CONTENT#", data.value)
+        );
       } else if (data.istemplate && data.type == "track") {
-        this.sendMessageApi(this.trackContent);
+        this.sendMessageApi(this.trackContent.replace("#CONTENT#", data.value));
       } else {
-        this.sendMessageApi(this.responseContent + data.value);
+        this.sendMessageApi(
+          this.responseContent.replace("#CONTENT#", data.value)
+        );
       }
     });
   },
@@ -153,8 +156,12 @@ export default {
       // 更新下最后一条
       this.messageList = [
         ...this.messageList.slice(0, this.messageList.length - 1),
-        ...result.data.chatResult.Choices,
+        ...(result.data.tags
+          ? [{ ...result.data.chatResult.Choices[0], tags: result.data.tags }]
+          : result.data.chatResult.Choices),
       ];
+
+      console.log(result.data.tags);
       localStorage.setItem("messageList", JSON.stringify(this.messageList));
       // 延迟滚动
       setTimeout(() => {
@@ -179,11 +186,13 @@ export default {
     },
     handleScrollBottom(instant) {
       const container = document.getElementById("container");
-      const scrollHeight = container.scrollHeight;
-      container.scrollTo({
-        behavior: instant ? "instant" : "smooth",
-        top: scrollHeight,
-      });
+      const scrollHeight = container?.scrollHeight || 0;
+      if (container) {
+        container.scrollTo({
+          behavior: instant ? "instant" : "smooth",
+          top: scrollHeight,
+        });
+      }
     },
   },
 };
