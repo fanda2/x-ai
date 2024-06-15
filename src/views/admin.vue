@@ -10,7 +10,7 @@
             <span>添加需求</span>
           </div>
           <div>
-            <el-form ref="form" :model="form" label-width="100px">
+            <el-form ref="form" :model="form" label-width="120px">
               <el-form-item label="设计师">
                 <el-select v-model="form.designerId" filterable>
                   <el-option label="Designer 1" value="1"></el-option>
@@ -65,11 +65,30 @@
                 ></el-input>
               </el-form-item>
 
-              <el-form-item label="预设标签">
+              <el-form-item label="预设Good标签">
                 <el-select
                   v-model="form.preTags"
                   multiple
-                  placeholder="请选择预设标签"
+                  placeholder="请选择预设Good标签"
+                  style="width: 100%"
+                  filterable
+                  :multiple-limit="2"
+                >
+                  <el-option
+                    v-for="item in tagOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+
+              <el-form-item label="预设Bad标签">
+                <el-select
+                  v-model="form.preBadTags"
+                  multiple
+                  placeholder="请选择预设Bad标签"
                   style="width: 100%"
                   filterable
                   :multiple-limit="2"
@@ -262,22 +281,30 @@
             <template slot-scope="props">
               <div style="background-color: #f3f3f3; padding: 0 20px">
                 <el-form label-position="left" inline>
-                  <el-form-item label="需求内容">
-                    <span>{{ `【需求】：${props.row.request_content}` }}</span>
+                  <el-form-item label="【需求内容】：">
+                    <span>{{ `${props.row.request_content}` }}</span>
                   </el-form-item>
                 </el-form>
                 <el-form label-position="left" inline>
-                  <el-form-item label="当前标签">
+                  <el-form-item label="【预置Good标签】：">
+                    <span>{{ props.row.pre_tags || "-" }}</span>
+                  </el-form-item>
+                  <el-form-item label="【当前Good标签】：">
                     <span>{{ props.row.hot_tags || "-" }}</span>
                   </el-form-item>
-                  <el-form-item label="预置标签">
-                    <span>{{ props.row.pre_tags || "-" }}</span>
+                </el-form>
+                <el-form label-position="left" inline>
+                  <el-form-item label="【预置Bad标签】：">
+                    <span>{{ props.row.pre_bad_tags || "-" }}</span>
+                  </el-form-item>
+                  <el-form-item label="【当前Bad标签】：">
+                    <span>{{ props.row.bad_tags || "-" }}</span>
                   </el-form-item>
                 </el-form>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="request_id" label="需求ID" width="100">
+          <el-table-column prop="request_id" label="需求ID" width="80">
           </el-table-column>
           <el-table-column prop="user_nick" label="设计师" width="120">
           </el-table-column>
@@ -305,14 +332,24 @@
               <span>{{ `【需求】：${scope.row.request_content}` }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="当前标签" width="180">
+          <el-table-column label="当前Good标签" width="180">
             <template slot-scope="scope">
               <span>{{ scope.row.hot_tags || "-" }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="预设标签" width="180">
+          <el-table-column label="当前Bad标签" width="180">
+            <template slot-scope="scope">
+              <span>{{ scope.row.bad_tags || "-" }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="预设Good标签" width="180">
             <template slot-scope="scope">
               <span>{{ scope.row.pre_tags || "-" }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="预设Bad标签" width="180">
+            <template slot-scope="scope">
+              <span>{{ scope.row.pre_bad_tags || "-" }}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -414,6 +451,7 @@ export default {
         requestContent: "",
         classify: "",
         preTags: [],
+        preBadTags: [],
       },
       formLoading: false,
 
@@ -479,7 +517,14 @@ export default {
 
       if (!this.form.preTags || this.form.preTags.length === 0) {
         return this.$message({
-          message: "请选择需求预置标签",
+          message: "请选择需求预置Good标签",
+          type: "warning",
+        });
+      }
+
+      if (!this.form.preBadTags || this.form.preBadTags.length === 0) {
+        return this.$message({
+          message: "请选择需求预置Bad标签",
           type: "warning",
         });
       }
@@ -492,7 +537,8 @@ export default {
         this.form.requestContent,
         this.form.designerId,
         classify,
-        this.form.preTags.join(";")
+        this.form.preTags.join(";"),
+        this.form.preBadTags.join(";")
       );
 
       this.formLoading = false;

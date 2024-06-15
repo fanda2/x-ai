@@ -76,7 +76,8 @@ export const createRequest = async (
   content,
   designerId,
   classify,
-  preTags
+  preTags,
+  preBadTags
 ) => {
   return await http_post("request", "", {
     creator,
@@ -84,6 +85,7 @@ export const createRequest = async (
     designerId: Number(designerId),
     classify,
     preTags,
+    preBadTags,
   });
 };
 
