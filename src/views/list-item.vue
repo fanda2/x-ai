@@ -90,7 +90,13 @@
                 <div class="title-content-item tag-show">
                   <div class="tag-show-title">Hot Comments:</div>
                   <div class="tag-list">
-                    <div class="tag-list-item" v-for="tag in item.hot_tags">
+                    <div
+                      class="tag-list-item"
+                      v-for="tag in item.hot_tags"
+                      :style="`background-color: ${tagMap.get(
+                        item.request_creator
+                      )}`"
+                    >
                       <div class="tag-list-item__text">
                         {{ tag }}
                       </div>
@@ -330,6 +336,9 @@ export default {
       ],
       avatarMap: new Map(
         Object.values(personMap).map((item) => [item.name, item.icon])
+      ),
+      tagMap: new Map(
+        Object.values(personMap).map((item) => [item.name, item.tag])
       ),
     };
   },
