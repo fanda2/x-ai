@@ -10,6 +10,10 @@
             class="photo-input__body-tags-item"
           >
             {{ item }}
+            <span
+              class="photo-input__body-tags-item__delete"
+              @click="handleDeleteTag(item)"
+            ></span>
           </div>
         </div>
         <div class="photo-input__body-input">
@@ -115,6 +119,11 @@ export default {
         this.tagList = [...this.tagList, tag];
       }
     },
+    // 删除标签
+    handleDeleteTag(tag) {
+      this.tagList = this.tagList.filter((item) => item !== tag);
+    },
+
     //发送请求生成图片
     diagramBtn: function () {
       if (this.sendMessageValue.trim() == "") {
@@ -217,6 +226,23 @@ export default {
           height: 26px;
           line-height: 26px;
           border: 1px solid #e0e0e0;
+
+          position: relative;
+
+          &__delete {
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            display: block;
+            width: 15px;
+            height: 15px;
+            background: url("../assets/img/delete.svg") no-repeat;
+            background-size: 100%;
+
+            &:hover {
+              cursor: pointer;
+            }
+          }
         }
       }
 
