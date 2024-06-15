@@ -1,21 +1,21 @@
 export const personMap = {
   // clients
-  DeveloperSectorA: { name: "Developer Sector A", icon: "" },
-  DeveloperSectorB: { name: "Developer Sector B", icon: "" },
-  BuildingOwner: { name: "Building Owner", icon: "" },
+  DeveloperSectorA: { name: "Developer Sector A", icon: "black" },
+  DeveloperSectorB: { name: "Developer Sector B", icon: "blue-black" },
+  BuildingOwner: { name: "Building Owner", icon: "blue" },
 
   // construction
-  BuilderSectorA: { name: "Builder Sector A", icon: "" },
-  BuilderSectorB: { name: "Builder Sector B", icon: "" },
-  SupplierA: { name: "Supplier A", icon: "" },
+  BuilderSectorA: { name: "Builder Sector A", icon: "gray" },
+  BuilderSectorB: { name: "Builder Sector B", icon: "green" },
+  SupplierA: { name: "Supplier A", icon: "orange" },
 
   // society
-  LocalAuthority: { name: "Local Authority", icon: "" },
-  CitizenA: { name: "Citizen A", icon: "" },
-  CitizenB: { name: "Citizen B", icon: "" },
+  LocalAuthority: { name: "Local Authority", icon: "red-light" },
+  CitizenA: { name: "Citizen A", icon: "red" },
+  CitizenB: { name: "Citizen B", icon: "yellow" },
 
   // designer
-  Designer: { name: "Designer", icon: "" },
+  Designer: { name: "Designer", icon: "green-light" },
 };
 
 /**

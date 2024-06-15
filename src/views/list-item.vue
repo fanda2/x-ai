@@ -17,7 +17,64 @@
           <div class="list-item-inner">
             <div class="left-box">
               <div class="avatar-box">
-                <img src="../assets/img/noman-avatar.svg" alt="头像" />
+                <img
+                  src="../assets/avatars/black.svg"
+                  alt="头像"
+                  v-if="avatarMap.get(item.request_creator) === 'black'"
+                />
+                <img
+                  src="../assets/avatars/blue-black.svg"
+                  alt="头像"
+                  v-else-if="
+                    avatarMap.get(item.request_creator) === 'blue-black'
+                  "
+                />
+                <img
+                  src="../assets/avatars/blue.svg"
+                  alt="头像"
+                  v-else-if="avatarMap.get(item.request_creator) === 'blue'"
+                />
+                <img
+                  src="../assets/avatars/gray.svg"
+                  alt="头像"
+                  v-else-if="avatarMap.get(item.request_creator) === 'gray'"
+                />
+                <img
+                  src="../assets/avatars/green.svg"
+                  alt="头像"
+                  v-else-if="avatarMap.get(item.request_creator) === 'green'"
+                />
+                <img
+                  src="../assets/avatars/green-light.svg"
+                  alt="头像"
+                  v-else-if="
+                    avatarMap.get(item.request_creator) === 'green-light'
+                  "
+                />
+                <img
+                  src="../assets/avatars/orange.svg"
+                  alt="头像"
+                  v-else-if="avatarMap.get(item.request_creator) === 'orange'"
+                />
+                <img
+                  src="../assets/avatars/red-light.svg"
+                  alt="头像"
+                  v-else-if="
+                    avatarMap.get(item.request_creator) === 'red-light'
+                  "
+                />
+                <img
+                  src="../assets/avatars/red.svg"
+                  alt="头像"
+                  v-else-if="avatarMap.get(item.request_creator) === 'red'"
+                />
+                <img
+                  src="../assets/avatars/yellow.svg"
+                  alt="头像"
+                  v-else-if="avatarMap.get(item.request_creator) === 'yellow'"
+                />
+                <!-- 设计师默认头像 -->
+                <img src="../assets/img/noman-avatar.svg" alt="头像" v-else />
               </div>
             </div>
             <div class="center-box">
@@ -78,7 +135,76 @@
             >
               <div class="left-box">
                 <div class="avatar-box">
-                  <img src="../assets/img/avatar1.svg" alt="头像" />
+                  <img
+                    src="../assets/avatars/black.svg"
+                    alt="头像"
+                    v-if="avatarMap.get(childItem.request_creator) === 'black'"
+                  />
+                  <img
+                    src="../assets/avatars/blue-black.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'blue-black'
+                    "
+                  />
+                  <img
+                    src="../assets/avatars/blue.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'blue'
+                    "
+                  />
+                  <img
+                    src="../assets/avatars/gray.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'gray'
+                    "
+                  />
+                  <img
+                    src="../assets/avatars/green.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'green'
+                    "
+                  />
+                  <img
+                    src="../assets/avatars/green-light.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'green-light'
+                    "
+                  />
+                  <img
+                    src="../assets/avatars/orange.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'orange'
+                    "
+                  />
+                  <img
+                    src="../assets/avatars/red-light.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'red-light'
+                    "
+                  />
+                  <img
+                    src="../assets/avatars/red.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'red'
+                    "
+                  />
+                  <img
+                    src="../assets/avatars/yellow.svg"
+                    alt="头像"
+                    v-else-if="
+                      avatarMap.get(childItem.request_creator) === 'yellow'
+                    "
+                  />
+                  <!-- 设计师默认头像 -->
+                  <img src="../assets/img/noman-avatar.svg" alt="头像" v-else />
                 </div>
               </div>
               <div class="center-box">
@@ -147,6 +273,7 @@
 <script>
 import { formatTimeDifference } from "../utils/utils";
 import { createMessage } from "../common/common";
+import { personMap } from "../utils/person";
 export default {
   props: {
     commentList: {
@@ -193,6 +320,9 @@ export default {
         "Sunlight",
         "Tree",
       ],
+      avatarMap: new Map(
+        Object.values(personMap).map((item) => [item.name, item.icon])
+      ),
     };
   },
   created() {
@@ -382,7 +512,7 @@ export default {
           display: flex;
           width: 50%;
           min-width: 300px;
-          &-title{
+          &-title {
             width: 128px;
           }
           .tag-list {
