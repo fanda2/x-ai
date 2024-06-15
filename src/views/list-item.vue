@@ -46,7 +46,7 @@
                 </div>
               </div>
               <div class="comment-content">
-                ({{ item.request_id }}){{ item.request_content }}
+                [{{ item.request_id }}]{{ item.request_content }}
               </div>
             </div>
             <div class="right-box">
@@ -73,8 +73,8 @@
           <div class="sub-list">
             <div
               class="sub-list-item"
-              v-for="(childItem, indey) in item.childrenList"
-              :key="indey"
+              v-for="(childItem, index) in item.childrenList"
+              :key="index"
             >
               <div class="left-box">
                 <div class="avatar-box">
@@ -88,7 +88,7 @@
                   </div>
                 </div>
                 <div class="comment-content">
-                  ({{ childItem.message_id }}){{ childItem.message_content }}
+                  [{{ childItem.message_id }}]{{ childItem.message_content }}
                 </div>
               </div>
               <div class="right-box" style="width: 60px">

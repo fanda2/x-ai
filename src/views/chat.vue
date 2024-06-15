@@ -2,7 +2,7 @@
   <div class="chat">
     <div class="chat-list">
       <div class="chat-list__header">AI ChatBot</div>
-      <div v-if="messageList.length" class="chat-list__body">
+      <div v-if="messageList.length" class="chat-list__body" id="container">
         <div
           class="chat-list-item"
           :class="
@@ -106,6 +106,9 @@ export default {
       }
     });
   },
+  mounted() {
+    this.handleScrollBottom(true);
+  },
   methods: {
     sendMessageApi: async function (sendContent, requestId) {
       let senMessageArr = [];
@@ -125,16 +128,38 @@ export default {
       this.messageList.push({
         Message: { Role: "user", Content: sendContent },
       });
+
+      // 插入一条空白信息
+      this.messageList.push({
+        Message: { Role: "assistant", Content: "正在思考中..." },
+      });
+
+      // 延迟滚动
+      setTimeout(() => {
+        this.handleScrollBottom();
+      }, 10);
+
       const result = await chatMessage(senMessageArr, this.currentRequestId);
       if (result.code !== 200) {
+        // 删除下最后一条内容
+        this.messageList = this.messageList.slice(
+          0,
+          this.messageList.length - 1
+        );
         return this.$message.error("信息发送失败！");
       }
       this.sendContent = "";
+
+      // 更新下最后一条
       this.messageList = [
-        ...this.messageList,
+        ...this.messageList.slice(0, this.messageList.length - 1),
         ...result.data.chatResult.Choices,
       ];
       localStorage.setItem("messageList", JSON.stringify(this.messageList));
+      // 延迟滚动
+      setTimeout(() => {
+        this.handleScrollBottom();
+      }, 10);
     },
     //点击发送信息按钮
     sendMessageBtn: async function () {
@@ -151,6 +176,14 @@ export default {
     },
     chooseTag: function (tag) {
       this.$bus.$emit("addTag", tag);
+    },
+    handleScrollBottom(instant) {
+      const container = document.getElementById("container");
+      const scrollHeight = container.scrollHeight;
+      container.scrollTo({
+        behavior: instant ? "instant" : "smooth",
+        top: scrollHeight,
+      });
     },
   },
 };

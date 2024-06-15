@@ -47,7 +47,7 @@
               <el-option
                 v-for="item in imageList.length"
                 :key="item"
-                :label="item"
+                :label="`第 ${item} 张`"
                 :value="item"
               >
               </el-option>
