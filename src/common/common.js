@@ -122,3 +122,21 @@ export const uplodImage = async (img, keyword) => {
 export const requestListAll = async () => {
   return await http_post("requestListAll", "", {});
 };
+
+// 添加冲突
+export const createConflict = async (requestIdIdA, requestIdIdB) => {
+  return await http_post("createConflict", "", {
+    requestIdIdA,
+    requestIdIdB,
+  });
+};
+
+// 查询冲突列表
+export const conflictList = async () => {
+  return await http_post("conflictList", "", {});
+};
+
+// 删除冲突
+export const deleteConflict = async (conflictId) => {
+  return await http_post("deleteConflict", "", { conflictId });
+};

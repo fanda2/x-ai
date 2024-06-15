@@ -146,6 +146,56 @@
 
         <el-card class="box-card">
           <div slot="header" class="clearfix">
+            <span>添加冲突</span>
+          </div>
+          <div>
+            <el-form ref="form" :model="conflictForm" label-width="100px">
+              <el-form-item label="需求A">
+                <el-select
+                  v-model="conflictForm.requestIdA"
+                  placeholder="请选择"
+                  style="width: 100%"
+                  filterable
+                >
+                  <el-option
+                    v-for="item in tableData"
+                    :key="item.request_id"
+                    :label="`${item.user_nick} | ${item.request_creator} |【${item.request_id}】需求：${item.request_content}`"
+                    :value="item.request_id"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="需求B">
+                <el-select
+                  v-model="conflictForm.requestIdB"
+                  placeholder="请选择"
+                  style="width: 100%"
+                  filterable
+                >
+                  <el-option
+                    v-for="item in tableData"
+                    :key="item.request_id"
+                    :label="`${item.user_nick} | ${item.request_creator} |【${item.request_id}】需求：${item.request_content}`"
+                    :value="item.request_id"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-button
+                  type="primary"
+                  @click="handleCreateConflict"
+                  :loading="conflictFormLoading"
+                  >添加冲突</el-button
+                >
+              </el-form-item>
+            </el-form>
+          </div>
+        </el-card>
+
+        <el-card class="box-card">
+          <div slot="header" class="clearfix">
             <span>任意删除需求</span>
           </div>
           <div>
@@ -267,6 +317,47 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
+      <el-tab-pane label="冲突列表" name="third">
+        <el-table
+          :data="conflictTableData"
+          style="width: 100%"
+          v-loading="conflictTableLoading"
+          stripe
+        >
+          <el-table-column prop="conflict_id" label="冲突ID" width="100">
+          </el-table-column>
+          <el-table-column label="需求A">
+            <template slot-scope="scope">
+              <span>{{
+                `【需求】：${
+                  requestMap.get(scope.row.request_id_a) ||
+                  scope.row.request_id_a
+                }`
+              }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="需求B">
+            <template slot-scope="scope">
+              <span>{{
+                `【需求】：${
+                  requestMap.get(scope.row.request_id_b) ||
+                  scope.row.request_id_b
+                }`
+              }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="120">
+            <template slot-scope="scope">
+              <el-button
+                type="danger"
+                size="mini"
+                @click="handleDeleteConflict(scope.row.conflict_id)"
+                >删除冲突</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -278,6 +369,9 @@ import {
   deleteRequestAny,
   deleteMessageAny,
   requestListAll,
+  createConflict,
+  conflictList,
+  deleteConflict,
 } from "../common/common";
 
 import { personOptions } from "../utils/person";
@@ -306,8 +400,13 @@ export default {
         // },
       ],
 
+      requestMap: new Map([]),
+
       options: personOptions,
       tagOptions: allowTag.map((tag) => ({ value: tag, label: tag })),
+
+      conflictTableLoading: false,
+      conflictTableData: [],
 
       form: {
         designerId: "",
@@ -325,6 +424,12 @@ export default {
       },
       messageFormLoading: false,
 
+      conflictForm: {
+        requestIdA: "",
+        requestIdB: "",
+      },
+      conflictFormLoading: false,
+
       deleteForm: {
         requestId: "",
       },
@@ -339,11 +444,13 @@ export default {
 
   mounted() {
     this.handleGetRequestAll();
+    this.handleGetConflictAll();
   },
 
   methods: {
     async handleRefresh() {
       await this.handleGetRequestAll();
+      await this.handleGetConflictAll();
       this.$message({ message: "刷新成功", type: "success" });
     },
     async handleCreateRequest() {
@@ -462,6 +569,45 @@ export default {
         type: "success",
       });
     },
+    async handleCreateConflict() {
+      if (!this.conflictForm.requestIdA) {
+        return this.$message({
+          message: "请选择需求",
+          type: "warning",
+        });
+      }
+      if (!this.conflictForm.requestIdB) {
+        return this.$message({
+          message: "请选择需求",
+          type: "warning",
+        });
+      }
+
+      console.log(this.conflictForm);
+      this.conflictFormLoading = true;
+      const { code } = await createConflict(
+        this.conflictForm.requestIdA,
+        this.conflictForm.requestIdB
+      );
+      this.conflictFormLoading = false;
+
+      if (code !== 200) {
+        return this.$message({
+          message: "添加失败",
+          type: "warning",
+        });
+      }
+
+      this.conflictForm = {
+        requestIdA: "",
+        requestIdB: "",
+      };
+
+      return this.$message({
+        message: "添加成功",
+        type: "success",
+      });
+    },
     async handleDeleteRequest() {
       if (!this.deleteForm.requestId) {
         return this.$message({
@@ -538,6 +684,38 @@ export default {
       }
 
       this.tableData = data.requestList;
+      this.requestMap = new Map(
+        data.requestList.map((item) => [item.request_id, item.request_content])
+      );
+    },
+
+    // 拉取所有冲突
+    async handleGetConflictAll() {
+      this.conflictTableLoading = true;
+      const { code, data } = await conflictList();
+      this.conflictTableLoading = false;
+
+      if (code !== 200) {
+        return this.$message({
+          message: "获取失败",
+          type: "warning",
+        });
+      }
+
+      this.conflictTableData = data.conflictList;
+    },
+
+    // 删除冲突
+    async handleDeleteConflict(conflictId) {
+      this.$message({ message: "正在删除..." });
+      const { code } = await deleteConflict(conflictId);
+      if (code !== 200) {
+        return this.$message({ message: "删除失败", type: "warning" });
+      }
+
+      // 刷新冲突
+      this.handleGetConflictAll();
+      this.$message({ message: "删除成功", type: "success" });
     },
   },
 };
