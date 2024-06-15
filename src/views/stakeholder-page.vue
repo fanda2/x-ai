@@ -83,11 +83,21 @@ export default {
         this.isLoading = false;
         return this.$message.error("获取信息失败");
       }
+
+      // 需要判断下是否是冲突标注
+      let conflict = [];
+      const conflictCache = sessionStorage.getItem("conflict");
+      if (conflictCache) {
+        conflict = JSON.parse(conflictCache);
+      }
+
       let requestList = result.data.requestList;
       requestList = requestList.map((item) => {
         return {
           ...item,
           hot_tags: (item.hot_tags || "").split(";").filter(Boolean),
+          // 是否冲突
+          isConflict: conflict.includes(item.request_id),
         };
       });
       // this.messageList = this.requestList;

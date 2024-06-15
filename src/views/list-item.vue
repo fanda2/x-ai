@@ -14,7 +14,11 @@
           v-for="(item, index) in commentList"
           :key="index"
         >
-          <div class="list-item-inner">
+          <div
+            :class="`list-item-inner ${
+              item.isConflict ? 'list-item__inner--conflict' : ''
+            }`"
+          >
             <div class="left-box">
               <div class="avatar-box">
                 <img
@@ -89,7 +93,8 @@
                 <div class="split-line"></div>
                 <div class="title-content-item tag-show">
                   <div class="tag-show-title">Hot Comments:</div>
-                  <div class="tag-list">
+                  <span v-if="item.hot_tags.length === 0">-</span>
+                  <div v-else class="tag-list">
                     <div
                       class="tag-list-item"
                       v-for="tag in item.hot_tags"
@@ -487,6 +492,7 @@ export default {
 .message-list-content {
   position: relative;
   padding: 0 30px;
+
   .list-item-inner,
   .sub-list-item {
     display: flex;
@@ -624,6 +630,10 @@ export default {
         background: rgb(170, 148, 158);
       }
     }
+  }
+
+  .list-item__inner--conflict {
+    background-color: #ffd5d5;
   }
 }
 .bottom-button {

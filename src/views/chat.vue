@@ -158,19 +158,28 @@ export default {
       }
       this.sendContent = "";
 
+      const tags = result.data.tags;
+      const conflict = result.data.conflict;
+
       // 更新下最后一条
       this.messageList = [
         ...this.messageList.slice(0, this.messageList.length - 1),
-        ...(result.data.tags
-          ? [{ ...result.data.chatResult.Choices[0], tags: result.data.tags }]
+        ...(tags
+          ? [{ ...result.data.chatResult.Choices[0], tags: tags }]
           : result.data.chatResult.Choices),
       ];
 
-      console.log(result.data.tags);
+      console.log("标签：", tags);
+      console.log("冲突：", conflict);
+
       sessionStorage.setItem("messageList", JSON.stringify(this.messageList));
 
-      if (result.data.tags) {
+      if (tags) {
         this.$bus.$emit("stakeholders-refresh", {});
+      }
+
+      if (conflict) {
+        sessionStorage.setItem("conflict", JSON.stringify(conflict));
       }
 
       // 延迟滚动
