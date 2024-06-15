@@ -51,6 +51,7 @@ import { extractTags } from "@/utils/utils";
 export default {
   data() {
     return {
+      isChatting: false,
       currentRequestId: "",
       trackContent: "Track：请问是否有其他需求与“#CONTENT#”这一需求相冲突？",
       alalyseContent:
@@ -114,6 +115,7 @@ export default {
   },
   methods: {
     sendMessageApi: async function (sendContent, requestId) {
+      if (this.isChatting) return;
       let senMessageArr = [];
       //获取历史消息
       this.messageList.forEach((item) => {
@@ -137,12 +139,15 @@ export default {
         Message: { Role: "assistant", Content: "正在思考中..." },
       });
 
+      this.isChatting = true;
       // 延迟滚动
       setTimeout(() => {
         this.handleScrollBottom();
       }, 10);
 
       const result = await chatMessage(senMessageArr, this.currentRequestId);
+      this.isChatting = false;
+
       if (result.code !== 200) {
         // 删除下最后一条内容
         this.messageList = this.messageList.slice(
@@ -163,6 +168,11 @@ export default {
 
       console.log(result.data.tags);
       localStorage.setItem("messageList", JSON.stringify(this.messageList));
+
+      if (result.data.tags) {
+        this.$bus.$emit("stakeholders-refresh", {});
+      }
+
       // 延迟滚动
       setTimeout(() => {
         this.handleScrollBottom();

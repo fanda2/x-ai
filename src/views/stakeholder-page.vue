@@ -63,6 +63,11 @@ export default {
       this.designerId = JSON.parse(userInfo).user_no;
     }
     this.getRequestList(this.tabArr[0].type);
+
+    // 监听刷新事件
+    this.$bus.$on("stakeholders-refresh", () => {
+      this.getRequestList(this.activeType);
+    });
   },
   methods: {
     changeMessageList: function (index, type) {
