@@ -341,12 +341,12 @@ export default {
 
       &-images {
         border: 1px solid #c0c0c0;
-        border-radius: 24px;
+        border-radius: 10px;
         min-height: 300px;
         height: calc(100% - 140px);
         min-width: 400px;
-        width: 70%;
-        margin: 10px auto 0 auto;
+        margin: 10px 20px 0 20px;
+        box-sizing: border-box;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -367,7 +367,7 @@ export default {
         justify-content: center;
         align-items: center;
         &-select {
-          width: 60%;
+          width: 40%;
           .el-select {
             width: 100%;
           }

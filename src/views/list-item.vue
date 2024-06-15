@@ -316,8 +316,9 @@
               </div>
               <div class="right-box" style="width: 60px">
                 <div
+                  v-if="!childItem.creator.toLowerCase().includes('design')"
                   class="ico-box color-red"
-                  @click="showCommentInput(index, childItem)"
+                  @click="showCommentInput(index, childItem, true)"
                 >
                   <img src="../assets/img/comment.svg" alt="评论" />
                 </div>
@@ -481,19 +482,22 @@ export default {
     },
 
     //展示评论框
-    showCommentInput: function (index, chatMsg) {
+    showCommentInput: function (index, chatMsg, skip) {
       this.showInputIndex = index;
       this.replayObj = chatMsg;
       this.currentRequestId = chatMsg.request_id;
       let sendValue = chatMsg.request_content
         ? chatMsg.request_content
         : chatMsg.message_content;
-      this.$bus.$emit("sendMessage", {
-        type: "message",
-        istemplate: false,
-        value: sendValue,
-        requestId: chatMsg.request_id,
-      });
+      // 允许跳过机器人对话
+      if (!skip) {
+        this.$bus.$emit("sendMessage", {
+          type: "message",
+          istemplate: false,
+          value: sendValue,
+          requestId: chatMsg.request_id,
+        });
+      }
     },
 
     //格式化时间
