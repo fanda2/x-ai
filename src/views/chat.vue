@@ -184,6 +184,7 @@ export default {
 
       if (conflict) {
         sessionStorage.setItem("conflict", JSON.stringify(conflict));
+        this.$bus.$emit("stakeholders-refresh", {});
       }
 
       // 延迟滚动

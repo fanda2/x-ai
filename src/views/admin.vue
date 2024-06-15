@@ -102,6 +102,14 @@
                   </el-option>
                 </el-select>
               </el-form-item>
+              <el-form-item label="交付时间">
+                <el-date-picker
+                  v-model="form.allowTime"
+                  type="datetime"
+                  placeholder="选择日期时间"
+                >
+                </el-date-picker>
+              </el-form-item>
 
               <el-form-item>
                 <el-button
@@ -413,7 +421,7 @@ import {
 
 import { personOptions } from "../utils/person";
 import { allowTag } from "../utils/options";
-
+import { formatTime } from "../utils/utils";
 export default {
   data() {
     return {
@@ -452,6 +460,7 @@ export default {
         classify: "",
         preTags: [],
         preBadTags: [],
+        allowTime: "",
       },
       formLoading: false,
 
@@ -529,6 +538,13 @@ export default {
         });
       }
 
+      if (!this.form.allowTime) {
+        return this.$message({
+          message: "请选择交付时间",
+          type: "warning",
+        });
+      }
+
       this.formLoading = true;
 
       // 执行提交
@@ -538,7 +554,8 @@ export default {
         this.form.designerId,
         classify,
         this.form.preTags.join(";"),
-        this.form.preBadTags.join(";")
+        this.form.preBadTags.join(";"),
+        formatTime(this.form.allowTime)
       );
 
       this.formLoading = false;

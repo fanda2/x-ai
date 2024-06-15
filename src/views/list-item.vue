@@ -107,8 +107,33 @@
                   {{ item.request_creator }}
                 </div>
                 <div class="split-line"></div>
-                <div class="title-content-item time-show">
-                  {{ formatTime(item.create_time) }} Remaining
+                <div
+                  class="title-content-item"
+                  style="color: #d04444"
+                  v-if="timeDiffWithNow(item.allow_time) < 0"
+                >
+                  {{ formatTime(item.allow_time) }}
+                </div>
+                <div
+                  class="title-content-item"
+                  style="color: #d04444"
+                  v-else-if="
+                    timeDiffWithNow(item.allow_time) < 1 * 24 * 60 * 60 * 1000
+                  "
+                >
+                  {{ formatTime(item.allow_time) }} Remaining
+                </div>
+                <div
+                  class="title-content-item"
+                  style="color: #5a8dff"
+                  v-else-if="
+                    timeDiffWithNow(item.allow_time) < 4 * 24 * 60 * 60 * 1000
+                  "
+                >
+                  {{ formatTime(item.allow_time) }} Remaining
+                </div>
+                <div class="title-content-item" v-else style="color: #507c04">
+                  {{ formatTime(item.allow_time) }} Remaining
                 </div>
                 <div class="split-line"></div>
                 <div class="title-content-item tag-show">
@@ -123,6 +148,7 @@
                     <div
                       class="tag-list-item"
                       v-for="tag in item.hot_tags"
+                      @click="chooseTag(tag)"
                       :style="`${
                         item.isConflict
                           ? `background-color: ${tagMap.get(
@@ -141,6 +167,7 @@
                     <div
                       class="tag-list-item"
                       v-for="tag in item.bad_tags"
+                      @click="chooseTag(tag)"
                       :style="`${
                         item.isConflict
                           ? `background-color: ${tagMap.get(
@@ -184,6 +211,7 @@
               </div>
             </div>
           </div>
+
           <div class="sub-list">
             <div
               class="sub-list-item"
@@ -195,69 +223,81 @@
                   <img
                     src="../assets/avatars/black.svg"
                     alt="头像"
-                    v-if="avatarMap.get(childItem.request_creator) === 'black'"
+                    v-if="
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'black'
+                    "
                   />
                   <img
                     src="../assets/avatars/blue-black.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'blue-black'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'blue-black'
                     "
                   />
                   <img
                     src="../assets/avatars/blue.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'blue'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'blue'
                     "
                   />
                   <img
                     src="../assets/avatars/gray.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'gray'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'gray'
                     "
                   />
                   <img
                     src="../assets/avatars/green.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'green'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'green'
                     "
                   />
                   <img
                     src="../assets/avatars/green-light.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'green-light'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'green-light'
                     "
                   />
                   <img
                     src="../assets/avatars/orange.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'orange'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'orange'
                     "
                   />
                   <img
                     src="../assets/avatars/red-light.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'red-light'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'red-light'
                     "
                   />
                   <img
                     src="../assets/avatars/red.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'red'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'red'
                     "
                   />
                   <img
                     src="../assets/avatars/yellow.svg"
                     alt="头像"
                     v-else-if="
-                      avatarMap.get(childItem.request_creator) === 'yellow'
+                      item.isConflict &&
+                      avatarMap.get(childItem.creator) === 'yellow'
                     "
                   />
                   <!-- 设计师默认头像 -->
@@ -331,6 +371,7 @@
 import { formatTimeDifference } from "../utils/utils";
 import { createMessage } from "../common/common";
 import { personMap } from "../utils/person";
+import { sleep, timeDiffWithNow } from "../utils/utils";
 export default {
   props: {
     commentList: {
@@ -460,8 +501,13 @@ export default {
       return formatTimeDifference(new Date(time));
     },
 
+    timeDiffWithNow: function (date) {
+      return timeDiffWithNow(new Date(date));
+    },
+
     // 发送信息回复
     designerCreateMessage: async function (requestId) {
+      this.$message({ message: "正在回复中..." });
       const result = await createMessage(
         this.currentRequestId,
         this.commentValue,
@@ -470,10 +516,15 @@ export default {
       if (result.code !== 200) {
         return this.$message.error("回复信息失败");
       }
+
+      this.$emit("getCommentList");
+
+      await sleep(2 * 1000);
+      this.$message({ message: "回复成功", type: "success" });
+
       this.showInputIndex = -1;
       this.replayObj = {};
       this.commentValue = "";
-      this.$emit("getCommentList");
     },
     //发送信息
     sendAnalyseMessage: function (value, chatMsg) {
@@ -491,6 +542,10 @@ export default {
         value: value,
         requestId: chatMsg.request_id,
       });
+    },
+
+    chooseTag: function (tag) {
+      this.$bus.$emit("addTag", tag);
     },
   },
 };
@@ -598,6 +653,11 @@ export default {
 
               &:hover {
                 cursor: pointer;
+                filter: grayscale(70%);
+              }
+
+              &:active {
+                filter: none;
               }
 
               &__text {
