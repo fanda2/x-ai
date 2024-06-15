@@ -96,6 +96,7 @@ export default {
         return {
           ...item,
           hot_tags: (item.hot_tags || "").split(";").filter(Boolean),
+          bad_tags: (item.bad_tags || "").split(";").filter(Boolean),
           // 是否冲突
           isConflict: conflict.includes(item.request_id),
         };

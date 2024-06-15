@@ -96,6 +96,10 @@ export default {
       ? JSON.parse(sessionStorage.getItem("messageList"))
       : [];
     this.$bus.$on("sendMessage", (data) => {
+      // 变换需求了，要清除原来的内容
+      if (data.requestId !== this.currentRequestId) {
+        this.messageList = [];
+      }
       this.currentRequestId = data.requestId;
       if (data.istemplate && data.type == "analyse") {
         this.sendMessageApi(

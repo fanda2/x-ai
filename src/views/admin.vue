@@ -366,7 +366,7 @@
           <el-table-column label="需求A">
             <template slot-scope="scope">
               <span>{{
-                `【需求】：${
+                `[${scope.row.request_id_a}]【需求】：${
                   requestMap.get(scope.row.request_id_a) ||
                   scope.row.request_id_a
                 }`
@@ -376,7 +376,7 @@
           <el-table-column label="需求B">
             <template slot-scope="scope">
               <span>{{
-                `【需求】：${
+                `[${scope.row.request_id_b}]【需求】：${
                   requestMap.get(scope.row.request_id_b) ||
                   scope.row.request_id_b
                 }`

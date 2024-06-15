@@ -14,68 +14,88 @@
           v-for="(item, index) in commentList"
           :key="index"
         >
-          <div
-            :class="`list-item-inner ${
-              item.isConflict ? 'list-item__inner--conflict' : ''
-            }`"
-          >
+          <div class="list-item-inner">
             <div class="left-box">
               <div class="avatar-box">
                 <img
                   src="../assets/avatars/black.svg"
                   alt="头像"
-                  v-if="avatarMap.get(item.request_creator) === 'black'"
+                  v-if="
+                    item.isConflict &&
+                    avatarMap.get(item.request_creator) === 'black'
+                  "
                 />
                 <img
                   src="../assets/avatars/blue-black.svg"
                   alt="头像"
                   v-else-if="
+                    item.isConflict &&
                     avatarMap.get(item.request_creator) === 'blue-black'
                   "
                 />
                 <img
                   src="../assets/avatars/blue.svg"
                   alt="头像"
-                  v-else-if="avatarMap.get(item.request_creator) === 'blue'"
+                  v-else-if="
+                    item.isConflict &&
+                    avatarMap.get(item.request_creator) === 'blue'
+                  "
                 />
                 <img
                   src="../assets/avatars/gray.svg"
                   alt="头像"
-                  v-else-if="avatarMap.get(item.request_creator) === 'gray'"
+                  v-else-if="
+                    item.isConflict &&
+                    avatarMap.get(item.request_creator) === 'gray'
+                  "
                 />
                 <img
                   src="../assets/avatars/green.svg"
                   alt="头像"
-                  v-else-if="avatarMap.get(item.request_creator) === 'green'"
+                  v-else-if="
+                    item.isConflict &&
+                    avatarMap.get(item.request_creator) === 'green'
+                  "
                 />
                 <img
                   src="../assets/avatars/green-light.svg"
                   alt="头像"
                   v-else-if="
+                    item.isConflict &&
                     avatarMap.get(item.request_creator) === 'green-light'
                   "
                 />
                 <img
                   src="../assets/avatars/orange.svg"
                   alt="头像"
-                  v-else-if="avatarMap.get(item.request_creator) === 'orange'"
+                  v-else-if="
+                    item.isConflict &&
+                    avatarMap.get(item.request_creator) === 'orange'
+                  "
                 />
                 <img
                   src="../assets/avatars/red-light.svg"
                   alt="头像"
                   v-else-if="
+                    item.isConflict &&
                     avatarMap.get(item.request_creator) === 'red-light'
                   "
                 />
                 <img
                   src="../assets/avatars/red.svg"
                   alt="头像"
-                  v-else-if="avatarMap.get(item.request_creator) === 'red'"
+                  v-else-if="
+                    item.isConflict &&
+                    avatarMap.get(item.request_creator) === 'red'
+                  "
                 />
                 <img
                   src="../assets/avatars/yellow.svg"
                   alt="头像"
-                  v-else-if="avatarMap.get(item.request_creator) === 'yellow'"
+                  v-else-if="
+                    item.isConflict &&
+                    avatarMap.get(item.request_creator) === 'yellow'
+                  "
                 />
                 <!-- 设计师默认头像 -->
                 <img src="../assets/img/noman-avatar.svg" alt="头像" v-else />
@@ -93,30 +113,48 @@
                 <div class="split-line"></div>
                 <div class="title-content-item tag-show">
                   <div class="tag-show-title">Hot Comments:</div>
-                  <span v-if="item.hot_tags.length === 0">-</span>
+                  <span
+                    v-if="
+                      item.hot_tags.length === 0 && item.bad_tags.length === 0
+                    "
+                    >-</span
+                  >
                   <div v-else class="tag-list">
                     <div
                       class="tag-list-item"
                       v-for="tag in item.hot_tags"
-                      :style="`background-color: ${tagMap.get(
-                        item.request_creator
-                      )}`"
+                      :style="`${
+                        item.isConflict
+                          ? `background-color: ${tagMap.get(
+                              item.request_creator
+                            )}`
+                          : ''
+                      }`"
                     >
-                      <div class="tag-list-item__text">
+                      <div class="ico-box">
+                        <img src="../assets/img/good.svg" alt="成功" />
+                      </div>
+                      <div class="tag-list-item__text" :title="tag">
                         {{ tag }}
                       </div>
-                      <!-- <div class="ico-box">
-                        <img
-                          src="../assets/img/success.svg"
-                          v-if="allowList.includes(tag)"
-                          alt="成功"
-                        />
-                        <img
-                          src="../assets/img/forbiden.svg"
-                          v-else
-                          alt="失败"
-                        />
-                      </div> -->
+                    </div>
+                    <div
+                      class="tag-list-item"
+                      v-for="tag in item.bad_tags"
+                      :style="`${
+                        item.isConflict
+                          ? `background-color: ${tagMap.get(
+                              item.request_creator
+                            )}`
+                          : ''
+                      }`"
+                    >
+                      <div class="ico-box">
+                        <img src="../assets/img/bad.svg" alt="失败" />
+                      </div>
+                      <div class="tag-list-item__text" :title="tag">
+                        {{ tag }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -537,6 +575,7 @@ export default {
           min-width: 300px;
           &-title {
             width: 115px;
+            min-width: 115px;
           }
           .tag-list {
             width: 80%;
@@ -548,7 +587,7 @@ export default {
             &-item {
               padding: 0 5px;
               display: flex;
-              gap: 2px;
+              gap: 4px;
               height: 20px;
               line-height: 20px;
               font-size: 14px;
@@ -572,7 +611,6 @@ export default {
               }
 
               .ico-box {
-                margin-left: 4px;
                 width: 18px;
                 min-width: 18px;
                 height: 18px;
@@ -634,10 +672,6 @@ export default {
         background: rgb(170, 148, 158);
       }
     }
-  }
-
-  .list-item__inner--conflict {
-    background-color: #ffd5d5;
   }
 }
 .bottom-button {
