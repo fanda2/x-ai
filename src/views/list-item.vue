@@ -95,13 +95,19 @@
                         {{ tag }}
                       </div>
                       <div class="ico-box">
-                        <img src="../assets/img/success.svg" alt="成功" />
+                        <img
+                          src="../assets/img/success.svg"
+                          v-if="allowList.includes(tag)"
+                          alt="成功"
+                        />
+                        <img
+                          src="../assets/img/forbiden.svg"
+                          v-else
+                          alt="失败"
+                        />
                       </div>
                     </div>
                   </div>
-                  <!-- <span v-for="(tag, i) in item.hot_tags" :key="i">{{
-                    tag
-                  }}</span> -->
                 </div>
               </div>
               <div class="comment-content">

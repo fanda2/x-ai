@@ -41,7 +41,7 @@ export default {
           return false;
         }
       });
-      console.log("dd",!isNaN(this.ruleForm.userId))
+      console.log("dd", !isNaN(this.ruleForm.userId));
       if (isTrue && this.ruleForm.userId && !isNaN(this.ruleForm.userId)) {
         let result = await userLogin(Number(this.ruleForm.userId));
         if (result.code !== 200) {
@@ -52,6 +52,7 @@ export default {
           type: "success",
         });
         localStorage.setItem("userInfo", JSON.stringify(result.data));
+        sessionStorage.removeItem("messageList");
         this.$router.push("/home");
       } else if (this.ruleForm.userId && !isNaN(this.ruleForm.userId)) {
         this.$message({

@@ -88,12 +88,12 @@ export default {
     };
   },
   created() {
-    let userMessage = localStorage.getItem("userInfo");
+    let userMessage = sessionStorage.getItem("userInfo");
     if (userMessage) {
       this.userInfo = JSON.parse(userMessage);
     }
-    this.messageList = localStorage.getItem("messageList")
-      ? JSON.parse(localStorage.getItem("messageList"))
+    this.messageList = sessionStorage.getItem("messageList")
+      ? JSON.parse(sessionStorage.getItem("messageList"))
       : [];
     this.$bus.$on("sendMessage", (data) => {
       this.currentRequestId = data.requestId;
@@ -167,7 +167,7 @@ export default {
       ];
 
       console.log(result.data.tags);
-      localStorage.setItem("messageList", JSON.stringify(this.messageList));
+      sessionStorage.setItem("messageList", JSON.stringify(this.messageList));
 
       if (result.data.tags) {
         this.$bus.$emit("stakeholders-refresh", {});
