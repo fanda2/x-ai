@@ -41,7 +41,6 @@ export default {
           return false;
         }
       });
-      console.log("dd",!isNaN(this.ruleForm.userId))
       if (isTrue && this.ruleForm.userId && !isNaN(this.ruleForm.userId)) {
         let result = await userLogin(Number(this.ruleForm.userId));
         if (result.code !== 200) {

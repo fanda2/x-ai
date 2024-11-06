@@ -71,16 +71,9 @@ export const http_post = (module, action, data) => {
  */
 
 export const http_all = (url, data) => {
-  const token = localStorage.getItem("token");
-  let headers = { "Content-Type": "multipart/form-data" };
-  if (token) {
-    headers = { ...headers, authorization: token };
-  }
   return new Promise((resolve, reject) => {
     axios
-      .post(url, data, {
-        headers,
-      })
+      .post(url, data)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
   });
