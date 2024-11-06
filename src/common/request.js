@@ -3,7 +3,7 @@ import axios from "axios";
 /**
  * 请求地址
  */
-const BASE_URL = `https://dev-service.hz.api-gw.cn/xaiservice`;
+const BASE_URL = `https://***/***`;
 /**
  * Get请求
  * @param {String} module 模块名
