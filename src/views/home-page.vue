@@ -31,6 +31,7 @@ export default {
   width: 100%;
   height: 100vh;
   min-width: 1400px;
+  min-height: 1080px;
   background-color: rgb(225, 225, 225);
 }
 .container-content {
@@ -40,6 +41,9 @@ export default {
   box-sizing: border-box;
   display: flex;
   min-width: 1200px;
+
+  max-width: 1920px;
+  margin: 0 auto;
   &_chat-outer-box {
     width: 30%;
     height: 100%;

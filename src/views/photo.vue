@@ -10,6 +10,10 @@
             class="photo-input__body-tags-item"
           >
             {{ item }}
+            <span
+              class="photo-input__body-tags-item__delete"
+              @click="handleDeleteTag(item)"
+            ></span>
           </div>
         </div>
         <div class="photo-input__body-input">
@@ -33,7 +37,11 @@
         </div>
         <div class="photo-preview__body-pagination">
           <div class="photo-preview__body-pagination-prev">
-            <el-button size="mini" type="primary" @click="prePage" :disabled="pageValue==1"
+            <el-button
+              size="mini"
+              type="primary"
+              @click="prePage"
+              :disabled="pageValue == 1"
               >上一页</el-button
             >
           </div>
@@ -47,14 +55,18 @@
               <el-option
                 v-for="item in imageList.length"
                 :key="item"
-                :label="item"
+                :label="`第 ${item} 张`"
                 :value="item"
               >
               </el-option>
             </el-select>
           </div>
           <div class="photo-preview__body-pagination-next">
-            <el-button size="mini" type="primary" :disabled="imageList.length==pageValue" @click="nextPage"
+            <el-button
+              size="mini"
+              type="primary"
+              :disabled="imageList.length == pageValue"
+              @click="nextPage"
               >下一页</el-button
             >
           </div>
@@ -107,6 +119,11 @@ export default {
         this.tagList = [...this.tagList, tag];
       }
     },
+    // 删除标签
+    handleDeleteTag(tag) {
+      this.tagList = this.tagList.filter((item) => item !== tag);
+    },
+
     //发送请求生成图片
     diagramBtn: function () {
       if (this.sendMessageValue.trim() == "") {
@@ -209,6 +226,23 @@ export default {
           height: 26px;
           line-height: 26px;
           border: 1px solid #e0e0e0;
+
+          position: relative;
+
+          &__delete {
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            display: block;
+            width: 15px;
+            height: 15px;
+            background: url("../assets/img/delete.svg") no-repeat;
+            background-size: 100%;
+
+            &:hover {
+              cursor: pointer;
+            }
+          }
         }
       }
 
@@ -307,12 +341,12 @@ export default {
 
       &-images {
         border: 1px solid #c0c0c0;
-        border-radius: 24px;
+        border-radius: 10px;
         min-height: 300px;
         height: calc(100% - 140px);
         min-width: 400px;
-        width: 70%;
-        margin: 10px auto 0 auto;
+        margin: 10px 20px 0 20px;
+        box-sizing: border-box;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -333,7 +367,7 @@ export default {
         justify-content: center;
         align-items: center;
         &-select {
-          width: 60%;
+          width: 40%;
           .el-select {
             width: 100%;
           }

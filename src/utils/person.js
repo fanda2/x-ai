@@ -1,21 +1,33 @@
 export const personMap = {
   // clients
-  DeveloperSectorA: { name: "Developer Sector A", icon: "" },
-  DeveloperSectorB: { name: "Developer Sector B", icon: "" },
-  BuildingOwner: { name: "Building Owner", icon: "" },
+  DeveloperSectorA: {
+    name: "Developer Sector A",
+    icon: "black",
+    tag: "#c7bcff",
+  },
+  DeveloperSectorB: {
+    name: "Developer Sector B",
+    icon: "blue-black",
+    tag: "#add8e6",
+  },
+  BuildingOwner: { name: "Building Owner", icon: "blue", tag: "#25c5ff" },
 
   // construction
-  BuilderSectorA: { name: "Builder Sector A", icon: "" },
-  BuilderSectorB: { name: "Builder Sector B", icon: "" },
-  SupplierA: { name: "Supplier A", icon: "" },
+  BuilderSectorA: { name: "Builder Sector A", icon: "gray", tag: "#d3d3d3" },
+  BuilderSectorB: { name: "Builder Sector B", icon: "green", tag: "#43da4b" },
+  SupplierA: { name: "Supplier A", icon: "orange", tag: "#ffa803" },
 
   // society
-  LocalAuthority: { name: "Local Authority", icon: "" },
-  CitizenA: { name: "Citizen A", icon: "" },
-  CitizenB: { name: "Citizen B", icon: "" },
+  LocalAuthority: {
+    name: "Local Authority",
+    icon: "red-light",
+    tag: "#f67abb",
+  },
+  CitizenA: { name: "Citizen A", icon: "red", tag: "#ff6666" },
+  CitizenB: { name: "Citizen B", icon: "yellow", tag: "#f6ff20" },
 
   // designer
-  Designer: { name: "Designer", icon: "" },
+  Designer: { name: "Designer", icon: "green-light", tag: "wheat" },
 };
 
 /**

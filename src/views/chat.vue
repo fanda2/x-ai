@@ -2,7 +2,7 @@
   <div class="chat">
     <div class="chat-list">
       <div class="chat-list__header">AI ChatBot</div>
-      <div v-if="messageList.length" class="chat-list__body">
+      <div v-if="messageList.length" class="chat-list__body" id="container">
         <div
           class="chat-list-item"
           :class="
@@ -15,19 +15,16 @@
           <div class="chat-list-item__content right-align-content">
             {{ item.Message.Content }}
             <div
-              v-if="
-                extractTagsFormat(item.Message.Content).length !== 0 &&
-                item.Message.Role == 'assistant'
-              "
+              v-if="item.tags && item.Message.Role == 'assistant'"
               class="chat-list-item__tags"
             >
               <div
                 class="chat-list-item__tags-item"
-                v-for="(item, index) in extractTagsFormat(item.Message.Content)"
+                v-for="(tagItem, index) in item.tags.split(';')"
                 :key="index"
-                @click="chooseTag(item)"
+                @click="chooseTag(tagItem)"
               >
-                {{ item }}
+                {{ tagItem }}
               </div>
             </div>
           </div>
@@ -54,10 +51,13 @@ import { extractTags } from "@/utils/utils";
 export default {
   data() {
     return {
+      isChatting: false,
       currentRequestId: "",
-      trackContent: "Track: 请问是否有其他需求与这一变动产生冲突？",
-      alalyseContent: "Analyse:现在建设方提出一个需求",
-      responseContent: "Response:现在建设方提出一个需求",
+      trackContent: "Track：请问是否有其他需求与“#CONTENT#”这一需求相冲突？",
+      alalyseContent:
+        "Analyse：现在建设方提出，“#CONTENT#”，请从建筑设计师的角度分析这个需求。",
+      responseContent:
+        "Response：建设方提出了：“#CONTENT#”请根据这一情况提供一个清晰易懂的回复。",
       userInfo: "",
       sendContent: "",
 
@@ -88,26 +88,38 @@ export default {
     };
   },
   created() {
-    let userMessage = localStorage.getItem("userInfo");
+    let userMessage = sessionStorage.getItem("userInfo");
     if (userMessage) {
       this.userInfo = JSON.parse(userMessage);
     }
-    this.messageList = localStorage.getItem("messageList")
-      ? JSON.parse(localStorage.getItem("messageList"))
+    this.messageList = sessionStorage.getItem("messageList")
+      ? JSON.parse(sessionStorage.getItem("messageList"))
       : [];
     this.$bus.$on("sendMessage", (data) => {
+      // 变换需求了，要清除原来的内容
+      if (data.requestId !== this.currentRequestId) {
+        this.messageList = [];
+      }
       this.currentRequestId = data.requestId;
       if (data.istemplate && data.type == "analyse") {
-        this.sendMessageApi(this.alalyseContent + data.value);
+        this.sendMessageApi(
+          this.alalyseContent.replace("#CONTENT#", data.value)
+        );
       } else if (data.istemplate && data.type == "track") {
-        this.sendMessageApi(this.trackContent);
+        this.sendMessageApi(this.trackContent.replace("#CONTENT#", data.value));
       } else {
-        this.sendMessageApi(this.responseContent + data.value);
+        this.sendMessageApi(
+          this.responseContent.replace("#CONTENT#", data.value)
+        );
       }
     });
   },
+  mounted() {
+    this.handleScrollBottom(true);
+  },
   methods: {
     sendMessageApi: async function (sendContent, requestId) {
+      if (this.isChatting) return;
       let senMessageArr = [];
       //获取历史消息
       this.messageList.forEach((item) => {
@@ -125,16 +137,60 @@ export default {
       this.messageList.push({
         Message: { Role: "user", Content: sendContent },
       });
+
+      // 插入一条空白信息
+      this.messageList.push({
+        Message: { Role: "assistant", Content: "正在思考中..." },
+      });
+
+      this.isChatting = true;
+      // 延迟滚动
+      setTimeout(() => {
+        this.handleScrollBottom();
+      }, 10);
+
       const result = await chatMessage(senMessageArr, this.currentRequestId);
+      this.isChatting = false;
+
       if (result.code !== 200) {
+        // 删除下最后一条内容
+        this.messageList = this.messageList.slice(
+          0,
+          this.messageList.length - 1
+        );
         return this.$message.error("信息发送失败！");
       }
       this.sendContent = "";
+
+      const tags = result.data.tags;
+      const conflict = result.data.conflict;
+
+      // 更新下最后一条
       this.messageList = [
-        ...this.messageList,
-        ...result.data.chatResult.Choices,
+        ...this.messageList.slice(0, this.messageList.length - 1),
+        ...(tags
+          ? [{ ...result.data.chatResult.Choices[0], tags: tags }]
+          : result.data.chatResult.Choices),
       ];
-      localStorage.setItem("messageList", JSON.stringify(this.messageList));
+
+      console.log("标签：", tags);
+      console.log("冲突：", conflict);
+
+      sessionStorage.setItem("messageList", JSON.stringify(this.messageList));
+
+      if (tags) {
+        this.$bus.$emit("stakeholders-refresh", {});
+      }
+
+      if (conflict) {
+        sessionStorage.setItem("conflict", JSON.stringify(conflict));
+        this.$bus.$emit("stakeholders-refresh", {});
+      }
+
+      // 延迟滚动
+      setTimeout(() => {
+        this.handleScrollBottom();
+      }, 10);
     },
     //点击发送信息按钮
     sendMessageBtn: async function () {
@@ -151,6 +207,16 @@ export default {
     },
     chooseTag: function (tag) {
       this.$bus.$emit("addTag", tag);
+    },
+    handleScrollBottom(instant) {
+      const container = document.getElementById("container");
+      const scrollHeight = container?.scrollHeight || 0;
+      if (container) {
+        container.scrollTo({
+          behavior: instant ? "instant" : "smooth",
+          top: scrollHeight,
+        });
+      }
     },
   },
 };
@@ -233,6 +299,12 @@ export default {
               box-sizing: border-box;
               padding: 3px 8px;
               cursor: pointer;
+
+              display: -webkit-box;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 1;
             }
           }
         }

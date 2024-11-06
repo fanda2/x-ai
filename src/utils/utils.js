@@ -1,6 +1,8 @@
 export function formatTimeDifference(date) {
   const now = new Date();
-  const diff = now.getTime() - date.getTime();
+  const diff = date.getTime() - now.getTime();
+
+  if (diff < 0) return "已过期";
 
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -30,4 +32,51 @@ export function extractTags(message, allowList) {
 
   // 去重并返回标签数组
   return [...new Set(tags.map((tag) => tag.trim()))];
+}
+
+/**
+ * 模拟睡眠函数
+ * @param {number} ms 毫秒数
+ */
+export async function sleep(ms) {
+  await new Promise((resolve) => {
+    setTimeout(() => resolve(true), ms);
+  });
+}
+
+/**
+ * 格式化时间
+ */
+export function formatTime(date) {
+  const newDate = new Date(date);
+  const year = newDate.getFullYear();
+  let months = newDate.getMonth() + 1;
+  let day = newDate.getDate();
+  let hour = newDate.getHours();
+  let minute = newDate.getMinutes();
+  let second = newDate.getSeconds();
+
+  if (months < 10) {
+    months = `0${months}`;
+  }
+  if (day < 10) {
+    day = `0${day}`;
+  }
+  if (hour < 10) {
+    hour = `0${hour}`;
+  }
+  if (minute < 10) {
+    minute = `0${minute}`;
+  }
+  if (second < 10) {
+    second = `0${second}`;
+  }
+
+  return `${year}-${months}-${day} ${hour}:${minute}:${second}`;
+}
+
+export function timeDiffWithNow(date) {
+  const now = new Date();
+  const diff = date.getTime() - now.getTime();
+  return diff;
 }
